@@ -8,26 +8,20 @@ import device as d
 
 class Device(d.Device):
 
-    def __init__(self, screen_width, screen_height, filename, options={}):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, filename=filename)
+    def __init__(self, screen_width, screen_height, name, options={}):
+        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
 
         fps = options.get('fps', 30)
 
         pd.size(screen_width, screen_height)
-        self.canvas = pd.export(filename, fps=fps, loop=-1)
+        self.canvas = pd.export(name + '.gif', fps=fps, loop=-1)
 
-    def draw_point(self, point):
-        # clipping what is visible inside "screen"
-        if point.x >= 0 and point.y >= 0 and point.x < self.screen_width and point.y < self.screen_height:
-            pd.oval(point.x, point.y, 1, 1, stroke=None, fill='red')
+    def draw_line(self, point0, point1, color=None):
+        pd.pen(0.1)
+        if color is not None:
+            c = pd.color(color.r, color.g, color.b, color.a)
+            pd.stroke(c)
 
-    def draw_line(self, point0, point1):
-        dist = len(point0 - point1)
-
-        if dist < 2:
-            return
-
-        pd.stroke(0.5)
         pd.line(point0.x, point0.y, point1.x, point1.y)
 
     def draw_triangle(self, point0, point1, point2, color=None):

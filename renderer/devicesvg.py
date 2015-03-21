@@ -7,33 +7,40 @@ import device as d
 
 class Device(d.Device):
 
-    def __init__(self, screen_width, screen_height, filename):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, filename=filename)
+    def __init__(self, screen_width, screen_height, name):
+        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
         self.output_buffer = []
 
-        self.output_buffer.append('<svg viewBox="0 0 ' + str(self.screen_width) + ' ' + str(self.screen_height) + '" xmlns="http://www.w3.org/2000/svg">\n')
+        svg = '<svg viewBox="0 0 {screen_width} {screen_height}" xmlns="http://www.w3.org/2000/svg">'.format(screen_width=screen_width, screen_height=screen_height)
+        self.output_buffer.append(svg + '\n')
         self.output_buffer.append('<g>\n')
 
-    def draw_point(self, point):
-        # clipping what is visible inside "screen"
-        if point.x >= 0 and point.y >= 0 and point.x < self.screen_width and point.y < self.screen_height:
-            self.output_buffer.append('<circle cx="' + str(point.x) + '" cy="' + str(point.y) + '" r="1" fill="black" stroke="none" />\n')
-
-    def draw_line(self, point1, point2):
+    def draw_line(self, point1, point2, color=None):
         dist = len(point1 - point2)
 
         if dist < 2:
             return
 
-        self.output_buffer.append(''.join(['<line x1="', str(point1.x), '" y1="', str(point1.y), '" x2="', str(point2.x), '" y2="', str(point2.y), '" stroke="red" />\n']))
+        stroke = self.to_svg_color(color, 'red')
+        line = '<line x1="{point1.x}" y1="{point1.y}" x2="{point2.x}" y2="{point2.y}" stroke="{stroke}" stroke-width="{line_width}"></line>'.format(point1=point1, point2=point2, stroke=stroke, line_width=0.1)
+        self.output_buffer.append(line + '\n')
 
-    def draw_triangle(self, point0, point1, point2):
+    def to_svg_color(self, color, default='black'):
+        if color is None:
+            svg_color = default
+        else:
+            svg_color = 'rgba({}, {}, {}, {})'.format(color.get('r', 0, 255, int), color.get('g', 0, 255, int), color.get('b', 0, 255, int), color.get('a', 0, 255, int))
+            return svg_color
+
+    def draw_triangle(self, point0, point1, point2, color=None):
         points = []
         points.append(str(point0.x) + ',' + str(point0.y))
         points.append(str(point1.x) + ',' + str(point1.y))
         points.append(str(point2.x) + ',' + str(point2.y))
+        fill = self.to_svg_color(color)
 
-        self.output_buffer.append('<polygon points="' + ' '.join(points) + '" stroke="black" fill="none" />')
+        triangle = '<polygon points="{points}" stroke="{stroke}" fill="{fill}" stroke-linejoin="bevel" stroke-width="{line_width}"></polygon>'.format(points=' '.join(points), stroke='black', fill=fill, line_width=0.1)
+        self.output_buffer.append(triangle + '\n')
 
     def begin_render(self):
         pass
@@ -45,6 +52,6 @@ class Device(d.Device):
         self.output_buffer.append('</g>\n')
         self.output_buffer.append('</svg>\n')
 
-        with open(self.filename, 'w') as f:
+        with open(self.name + '.svg', 'w') as f:
             f.writelines(self.output_buffer)
 

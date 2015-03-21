@@ -1,38 +1,49 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from __future__ import division
+
+import argparse
 import sys
+
 from renderer import *
+
+def render(dev, cam, mesh):
+    mesh.rotation.x += 0.0104
+    mesh.rotation.y += 0.0104
+    dev.render(cam, [mesh])
 
 if __name__ == '__main__':
 
-    filename = 'cube.gif'
-    frames = 600
-    duration = 10
-    fps = frames / duration
+    parser = argparse.ArgumentParser(description='Renders something')
+    parser.add_argument('--fps', type=int, nargs='?', default=30,
+        help='The number of frames per second for an animation when using the \'gif\' engine (default: %(default)s)')
+    parser.add_argument('-e', '--engine', choices=['svg', 'gif'], type=str, default='gif', help='The engine to use (default: %(default)s)')
 
-    print 'rendering %d frames at %d fps to %s' % (frames, fps, filename)
-    sys.stdout.flush()
+    args = parser.parse_args()
+
+    frames = 600
+    fps = args.fps
+
+    g = geometryreader.GeometryReader()
+    mesh = g.read('./files/cube.g')
 
     cam = camera.Camera()
-    g = geometryreader.GeometryReader()
-    m = g.read('./files/cube.g')
-
     cam.position = vector3.Vector3(0, 0, 10)
     cam.target = vector3.Vector3(0, 0, 0)
 
-    dev = deviceplot.Device(160, 100, filename, {fps: fps})
+    if args.engine == 'svg':
+        dev = devicesvg.Device(160, 100, mesh.name)
+        render(dev, cam, mesh)
+    else:
+        dev = deviceplot.Device(160, 100, mesh.name, {fps: fps})
+        print '[',
 
-    print '[',
+        for i in xrange(frames):
+            sys.stdout.flush()
+            sys.stdout.write('.')
+            render(dev, cam, mesh)
 
-    for i in xrange(frames):
-        sys.stdout.flush()
-        sys.stdout.write('.')
-
-        m.rotation.x += 0.0104
-        m.rotation.y += 0.0104
-        dev.render(cam, [m])
-
-    print '] DONE'
+        print '] DONE'
 
     dev.present()
