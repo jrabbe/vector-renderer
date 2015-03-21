@@ -52,9 +52,17 @@ class Device:
 
             transformation_matrix = world_matrix * view_matrix * projection_matrix
 
-            for vi in range(len(mesh.vertices)):
-                point = self.project(mesh.vertices[vi], transformation_matrix)
-                self.draw_point(point)
+            for ii in range(0, len(mesh.indices), 3):
+                vi0 = mesh.indices[ii + 0]
+                vi1 = mesh.indices[ii + 1]
+                vi2 = mesh.indices[ii + 2]
+
+                point0 = self.project(mesh.vertices[vi0], transformation_matrix)
+                point1 = self.project(mesh.vertices[vi1], transformation_matrix)
+                point2 = self.project(mesh.vertices[vi2], transformation_matrix)
+                self.draw_line(point0, point1)
+                self.draw_line(point1, point2)
+                self.draw_line(point2, point0)
 
         self.end_render()
 
