@@ -9,4 +9,4 @@ __maintainer__ = 'Jonas Rabbe'
 __email__ = 'jonas.rabbe@gmail.com'
 __status__ = 'Development'
 
-__all__ = ['camera', 'color4', 'device', 'deviceplot', 'devicesvg', 'matrix', 'mesh', 'quaternion', 'vector2', 'vector3']
+__all__ = ['camera', 'color4', 'device', 'deviceplot', 'devicesvg', 'geometryreader', 'matrix', 'mesh', 'quaternion', 'vector2', 'vector3']
