@@ -63,9 +63,9 @@ class Vector3(object):
         return self.__div__(other)
 
     def __len__(self):
-        return math.sqrt(self.lengthSquared())
+        return math.sqrt(self.length_squared())
 
-    def lengthSquared(self):
+    def length_squared(self):
         return self.x * self.x + self.y * self.y + self.z * self.z
 
     def normalize(self):
