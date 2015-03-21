@@ -9,25 +9,28 @@ import sys
 from renderer import *
 
 def render(dev, cam, mesh):
+    dev.render(cam, [mesh])
     mesh.rotation.x += 0.0104
     mesh.rotation.y += 0.0104
-    dev.render(cam, [mesh])
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Renders something')
+    parser.add_argument('part', type=str, help='The id of the part to read and render', metavar='PART')
+    parser.add_argument('-p', '--primitives', type=str, nargs='?', default='.',
+        help='The path to the directory containing the primitives (default: %(default)s)')
     parser.add_argument('--fps', type=int, nargs='?', default=30,
         help='The number of frames per second for an animation when using the \'gif\' engine (default: %(default)s)')
-    parser.add_argument('-e', '--engine', choices=['svg', 'gif'], type=str, default='gif', help='The engine to use (default: %(default)s)')
+    parser.add_argument('-e', '--engine', choices=['svg', 'gif'], type=str, default='gif',
+        help='The engine to use (default: %(default)s)')
 
     args = parser.parse_args()
 
-    frames = 600
-    fps = args.fps
+    print 'Reading geometry for ', args.part
+    g = geometryreader.GeometryReader(args.primitives)
+    mesh = g.read(args.part)
 
-    g = geometryreader.GeometryReader()
-    mesh = g.read('./files/cube.g')
-
+    print 'Creating camera'
     cam = camera.Camera()
     cam.position = vector3.Vector3(0, 0, 10)
     cam.target = vector3.Vector3(0, 0, 0)
@@ -36,6 +39,8 @@ if __name__ == '__main__':
         dev = devicesvg.Device(160, 100, mesh.name)
         render(dev, cam, mesh)
     else:
+        frames = 600
+        fps = args.fps
         dev = deviceplot.Device(160, 100, mesh.name, {fps: fps})
         print '[',
 

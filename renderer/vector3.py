@@ -25,6 +25,9 @@ def distance_squared(a, b):
 def distance(a, b):
     return len(a - b)
 
+def zero():
+    return Vector3()
+
 def up():
     return Vector3(y=1.0)
 

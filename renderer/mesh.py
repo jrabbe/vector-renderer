@@ -30,19 +30,16 @@ class Face(object):
 
 class Mesh(object):
 
-    def __init__(self, name, indices, vertices, normals, textures=None):
+    def __init__(self, name, indices, vertices, textures_enabled):
         """
-        Initialize a mesh from its vertices, vertex normals, vertex textures, and indices.
+        Initialize a mesh from its vertices and indices.
 
         Keyword arguments:
         name -- the name of the mesh
         indices -- the indices of the vertices that make up each face.
         vertices -- the vertices for the 3D mesh
-        normals -- the vertex normals for the 3D mesh
-        textures -- the textures for each vertex of the 3D mesh (default: None)
         """
         self.name = name
-        self.textures_enabled = textures is not None
 
         self.faces = []
         for i in xrange(0, len(indices), 3):
@@ -52,12 +49,21 @@ class Mesh(object):
 
             self.faces.append(Face(a, b, c))
 
-        self.vertices = vertices
-        self.normals = normals
-        self.textures = textures
+        print 'Created mesh ', name, ' with ', len(self.faces), ' faces'
 
-        self.rotation = vector3.Vector3()
-        self.position = vector3.Vector3()
+        self.vertices = vertices
+        self.textures_enabled = textures_enabled
+
+        self.rotation = vector3.zero()
+        self.position = vector3.zero()
+
+    def merge(self, other):
+        highest_index = len(self.vertices)
+        print 'highest old index = ', highest_index
+
+        other_faces = map(lambda f: Face(f.a + highest_index, f.b + highest_index, f.c + highest_index),other.faces)
+        self.faces += other_faces
+        self.vertices += other.vertices[:]
 
     def face_normal(self, face):
         """
@@ -69,8 +75,8 @@ class Mesh(object):
         if face not in self.faces:
             return None
 
-        normal_a = self.normals[face.a]
-        normal_b = self.normals[face.b]
-        normal_c = self.normals[face.c]
+        normal_a = self.vertices[face.a].coordinates + self.vertices[face.a].normal
+        normal_b = self.vertices[face.b].coordinates + self.vertices[face.b].normal
+        normal_c = self.vertices[face.c].coordinates + self.vertices[face.c].normal
 
         return (normal_a + normal_b + normal_c).scale(1/3).normalize()

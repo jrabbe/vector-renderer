@@ -119,6 +119,14 @@ class Matrix(object):
             self.m[10] = 1.0
             self.m[15] = 1.0
 
+    def __str__(self):
+        return """
+        {0[0]} {0[1]} {0[2]} {0[3]}
+        {0[4]} {0[5]} {0[6]} {0[7]}
+        {0[8]} {0[9]} {0[10]} {0[11]}
+        {0[12]} {0[13]} {0[14]} {0[15]}
+        """.format(self.m)
+
     def is_identity(self):
         if self.m[0] != 1.0 or self.m[5] != 1.0 or self.m[10] != 1.0 or self.m[15] != 1.0:
             return False

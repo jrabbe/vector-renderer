@@ -29,7 +29,10 @@ class Device(d.Device):
         if color is None:
             svg_color = default
         else:
-            svg_color = 'rgba({}, {}, {}, {})'.format(color.get('r', 0, 255, int), color.get('g', 0, 255, int), color.get('b', 0, 255, int), color.get('a', 0, 255, int))
+            svg_color = 'rgba({}, {}, {}, {})'.format(color.get('r', 0, 255, int),
+                color.get('g', 0, 255, int),
+                color.get('b', 0, 255, int),
+                color.get('a', 0.0, 1.0, float))
             return svg_color
 
     def draw_triangle(self, point0, point1, point2, color=None):

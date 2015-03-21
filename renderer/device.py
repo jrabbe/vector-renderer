@@ -42,7 +42,6 @@ class Device(object):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.name = name
-        self.output_buffer = []
 
     def draw_line(self, point0, point1, color=None):
         """
@@ -97,7 +96,9 @@ class Device(object):
         meshes -- the meshes to render
         """
         view_matrix = matrix.look_at_lh(camera.position, camera.target, v3.up())
+        # print 'view matrix = ', view_matrix
         projection_matrix = matrix.perspective_fov_lh(0.78, self.screen_width / self.screen_height, 0.01, 1.0)
+        # print 'projection matrix  = ', projection_matrix
 
         self.begin_render()
 
@@ -106,6 +107,7 @@ class Device(object):
             rot = matrix.rotation_yaw_pitch_roll(mesh.rotation.y, mesh.rotation.x, mesh.rotation.z)
             tran = matrix.translation(mesh.position.x, mesh.position.y, mesh.position.z)
             world_matrix = rot * tran
+            # print 'world matrix = ', world_matrix
             world_view = world_matrix * view_matrix
 
             transformation = world_view * projection_matrix
@@ -115,24 +117,29 @@ class Device(object):
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                # face_normal = mesh.face_normal(face).transform(world_view)
-                # if face_normal.z >= 0:
-                #     continue;
+                fn = mesh.face_normal(face)
+                face_normal = fn.transform(world_matrix)
+                if face_normal.z >= 0:
+                    continue
 
-                point0 = self.project(vertex0, transformation)
-                point1 = self.project(vertex1, transformation)
-                point2 = self.project(vertex2, transformation)
+                point0 = self.project(vertex0.coordinates, transformation)
+                point1 = self.project(vertex1.coordinates, transformation)
+                point2 = self.project(vertex2.coordinates, transformation)
 
-                color = 0.75
-                self.draw_triangle(point0, point1, point2, c4.Color4(color, color, color))
+                color = 0.5
+                self.draw_triangle(point0, point1, point2, c4.Color4(color, color, color, 0.5))
 
-                normal0 = mesh.normals[face.a].normalize()
-                normal1 = mesh.normals[face.b].normalize()
-                normal2 = mesh.normals[face.c].normalize()
+                # normal0 = vertex0.normal + vertex0.coordinates
+                # normal1 = vertex1.normal + vertex1.coordinates
+                # normal2 = vertex2.normal + vertex2.coordinates
 
-                self.draw_line(self.project(normal0, transformation), point0, c4.Color4(normal0.x, normal0.y, normal0.z, 0.5))
-                self.draw_line(self.project(normal1, transformation), point1, c4.Color4(normal1.x, normal1.y, normal1.z, 0.5))
-                self.draw_line(self.project(normal2, transformation), point2, c4.Color4(normal2.x, normal2.y, normal2.z, 0.5))
+                self.draw_line(self.project(fn, transformation), point0, c4.Color4(1, 0, 0, 0.5))
+                self.draw_line(self.project(fn, transformation), point1, c4.Color4(1, 0, 0, 0.5))
+                self.draw_line(self.project(fn, transformation), point2, c4.Color4(1, 0, 0, 0.5))
+
+                # self.draw_line(self.project(normal0, transformation), point0, c4.Color4(normal0.x, normal0.y, normal0.z, 0.5))
+                # self.draw_line(self.project(normal1, transformation), point1, c4.Color4(normal1.x, normal1.y, normal1.z, 0.5))
+                # self.draw_line(self.project(normal2, transformation), point2, c4.Color4(normal2.x, normal2.y, normal2.z, 0.5))
 
         self.end_render()
 
