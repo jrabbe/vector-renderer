@@ -4,7 +4,6 @@
 from __future__ import division
 
 import plotdevice as pd
-
 import device as d
 
 class Device(d.Device):
@@ -31,9 +30,16 @@ class Device(d.Device):
         pd.stroke(0.5)
         pd.line(point0.x, point0.y, point1.x, point1.y)
 
-    def draw_triangle(self, point0, point1, point2):
+    def draw_triangle(self, point0, point1, point2, color=None):
+        pd.pen(0.1, join=pd.BEVEL)
+        pd.stroke(0)
+
+        if color is not None:
+            c = pd.color(color.r, color.g, color.b, color.a)
+            pd.fill(c)
+
         points = [(point0.x, point0.y), (point1.x, point1.y), (point2.x, point2.y)]
-        pd.bezier(points, stroke=0.5, fill=None, close=True)
+        pd.bezier(points, close=True)
 
     def begin_render(self):
         pd.clear(all)

@@ -3,9 +3,10 @@
 
 from __future__ import division
 
-import vector2
-import vector3
+import vector2 as v2
+import vector3 as v3
 import matrix
+import color4 as c4
 
 class Device:
 
@@ -21,7 +22,7 @@ class Device:
     def draw_line(self, point0, point1):
         raise NotImplementedError
 
-    def draw_triangle(self, point0, point1, point2):
+    def draw_triangle(self, point0, point1, point2, color=None):
         raise NotImplementedError
 
     def begin_render(self):
@@ -36,10 +37,10 @@ class Device:
         x = int(point.x * self.screen_width + self.screen_width / 2.0)
         y = int(-point.y * self.screen_height + self.screen_height / 2.0)
 
-        return vector2.Vector2(x, y)
+        return v2.Vector2(x, y)
 
     def render(self, camera, meshes):
-        view_matrix = matrix.look_at_lh(camera.position, camera.target, vector3.up())
+        view_matrix = matrix.look_at_lh(camera.position, camera.target, v3.up())
         projection_matrix = matrix.perspective_fov_lh(0.78, self.screen_width / self.screen_height, 0.01, 1.0)
 
         self.begin_render()
@@ -60,9 +61,8 @@ class Device:
                 point0 = self.project(mesh.vertices[vi0], transformation_matrix)
                 point1 = self.project(mesh.vertices[vi1], transformation_matrix)
                 point2 = self.project(mesh.vertices[vi2], transformation_matrix)
-                self.draw_line(point0, point1)
-                self.draw_line(point1, point2)
-                self.draw_line(point2, point0)
+                color = 0.25 + (ii % len(mesh.indices)) * 0.75 / len(mesh.indices);
+                self.draw_triangle(point0, point1, point2, c4.Color4(color, color, color, 1))
 
         self.end_render()
 
