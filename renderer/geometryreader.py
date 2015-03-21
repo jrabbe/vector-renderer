@@ -1,5 +1,10 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+from __future__ import division
 
 import struct
+import os
 
 import mesh as m
 import vector3 as v3
@@ -26,6 +31,8 @@ class GeometryReader:
         self.__offset = 0
         self.__size = len(self.__buffer)
 
+        name = self.id_from_filename(filename)
+
         # Discarding first integer
         self.getinteger()
 
@@ -35,24 +42,29 @@ class GeometryReader:
         options = self.getinteger()
         textures_enabled = ((options & self.__TEXTURE_COORDINATES_INCLUDED) == self.__TEXTURE_COORDINATES_INCLUDED)
 
-        mesh = m.Mesh('brick', vertexcount, indexcount, textures_enabled)
+        vertices = []
+        normals = []
+        textures  = None
+        indices = []
 
         # Get vertices
         for i in xrange(vertexcount):
-            mesh.vertices[i] = v3.Vector3(self.getfloat(), self.getfloat(), self.getfloat())
+            vertices.append(v3.Vector3(self.getfloat(), self.getfloat(), self.getfloat()))
 
         # Get normals
         for i in xrange(vertexcount):
-            mesh.normals[i] = v3.Vector3(self.getfloat(), self.getfloat(), self.getfloat())
+            normals.append(v3.Vector3(self.getfloat(), self.getfloat(), self.getfloat()))
 
         # Conditionally get textures
         if textures_enabled:
+            textures = []
             for i in xrange(vertexcount):
-                mesh.textures[i] = v2.Vector2(self.getfloat(), self.getfloat())
+                textures.append(v2.Vector2(self.getfloat(), self.getfloat()))
 
         for i in xrange(indexcount):
-            mesh.indices[i] = self.getinteger()
+            indices.append(self.getinteger())
 
+        mesh = m.Mesh(name, indices, vertices, normals, textures)
         return mesh
 
     def getinteger(self):
@@ -72,3 +84,6 @@ class GeometryReader:
         self.__offset += fmtsize
 
         return res
+
+    def id_from_filename(self, filename):
+        return os.path.splitext(os.path.basename(filename))[0]

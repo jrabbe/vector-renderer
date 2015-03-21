@@ -102,6 +102,12 @@ def perspective_fov_lh(fov, aspect, z_near, z_far):
     result.m[14] = (z_near * z_far) / (z_near - z_far)
     return result
 
+def identity():
+    return Matrix(identity=True)
+
+def zero():
+    return Matrix()
+
 class Matrix(object):
 
     def __init__(self, identity=False):
