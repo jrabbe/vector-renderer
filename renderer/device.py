@@ -117,9 +117,11 @@ class Device(object):
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                fn = mesh.face_normal(face)
-                face_normal = fn.transform(world_matrix)
-                if face_normal.z >= 0:
+                normal0 = vertex0.normal + vertex0.coordinates
+                normal1 = vertex1.normal + vertex1.coordinates
+                normal2 = vertex2.normal + vertex2.coordinates
+
+                if ((vertex0.coordinates).transform(world_matrix) - camera.position).dot((normal0).transform(world_matrix)) >= 0 and ((vertex1.coordinates).transform(world_matrix) - camera.position).dot((normal1).transform(world_matrix)) >= 0 and ((vertex2.coordinates).transform(world_matrix) - camera.position).dot((normal2).transform(world_matrix)) >= 0:
                     continue
 
                 point0 = self.project(vertex0.coordinates, transformation)
@@ -129,17 +131,9 @@ class Device(object):
                 color = 0.5
                 self.draw_triangle(point0, point1, point2, c4.Color4(color, color, color, 0.5))
 
-                # normal0 = vertex0.normal + vertex0.coordinates
-                # normal1 = vertex1.normal + vertex1.coordinates
-                # normal2 = vertex2.normal + vertex2.coordinates
-
-                self.draw_line(self.project(fn, transformation), point0, c4.Color4(1, 0, 0, 0.5))
-                self.draw_line(self.project(fn, transformation), point1, c4.Color4(1, 0, 0, 0.5))
-                self.draw_line(self.project(fn, transformation), point2, c4.Color4(1, 0, 0, 0.5))
-
-                # self.draw_line(self.project(normal0, transformation), point0, c4.Color4(normal0.x, normal0.y, normal0.z, 0.5))
-                # self.draw_line(self.project(normal1, transformation), point1, c4.Color4(normal1.x, normal1.y, normal1.z, 0.5))
-                # self.draw_line(self.project(normal2, transformation), point2, c4.Color4(normal2.x, normal2.y, normal2.z, 0.5))
+                self.draw_line(self.project(normal0, transformation), point0, c4.Color4(normal0.x, normal0.y, normal0.z, 0.5))
+                self.draw_line(self.project(normal1, transformation), point1, c4.Color4(normal1.x, normal1.y, normal1.z, 0.5))
+                self.draw_line(self.project(normal2, transformation), point2, c4.Color4(normal2.x, normal2.y, normal2.z, 0.5))
 
         self.end_render()
 

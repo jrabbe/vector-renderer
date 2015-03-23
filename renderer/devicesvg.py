@@ -22,7 +22,7 @@ class Device(d.Device):
             return
 
         stroke = self.to_svg_color(color, 'red')
-        line = '<line x1="{point1.x}" y1="{point1.y}" x2="{point2.x}" y2="{point2.y}" stroke="{stroke}" stroke-width="{line_width}"></line>'.format(point1=point1, point2=point2, stroke=stroke, line_width=0.1)
+        line = '<line x1="{point1.x}" y1="{point1.y}" x2="{point2.x}" y2="{point2.y}" stroke="{stroke}" stroke-width="{line_width}"></line>'.format(point1=point1, point2=point2, stroke=stroke, line_width=1)
         self.output_buffer.append(line + '\n')
 
     def to_svg_color(self, color, default='black'):
@@ -42,7 +42,7 @@ class Device(d.Device):
         points.append(str(point2.x) + ',' + str(point2.y))
         fill = self.to_svg_color(color)
 
-        triangle = '<polygon points="{points}" stroke="{stroke}" fill="{fill}" stroke-linejoin="bevel" stroke-width="{line_width}"></polygon>'.format(points=' '.join(points), stroke='black', fill=fill, line_width=0.1)
+        triangle = '<polygon points="{points}" stroke="{stroke}" fill="{fill}" stroke-linejoin="bevel" stroke-width="{line_width}"></polygon>'.format(points=' '.join(points), stroke='black', fill=fill, line_width=1)
         self.output_buffer.append(triangle + '\n')
 
     def begin_render(self):

@@ -36,12 +36,14 @@ if __name__ == '__main__':
     cam.target = vector3.Vector3(0, 0, 0)
 
     if args.engine == 'svg':
-        dev = devicesvg.Device(160, 100, mesh.name)
+        dev = devicesvg.Device(1600, 1000, mesh.name)
+        mesh.rotation.x += 0.2
+        mesh.rotation.y -= 0.4
         render(dev, cam, mesh)
     else:
         frames = 600
         fps = args.fps
-        dev = deviceplot.Device(160, 100, mesh.name, {fps: fps})
+        dev = deviceplot.Device(320, 200, mesh.name, {fps: fps})
         print '[',
 
         for i in xrange(frames):
