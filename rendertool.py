@@ -8,11 +8,6 @@ import sys
 
 from renderer import *
 
-def render(dev, cam, mesh):
-    dev.render(cam, [mesh])
-    mesh.rotation.x += 0.0104
-    mesh.rotation.y += 0.0104
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Renders something')
@@ -39,17 +34,19 @@ if __name__ == '__main__':
         dev = devicesvg.Device(1600, 1000, mesh.name)
         mesh.rotation.x += 0.2
         mesh.rotation.y -= 0.4
-        render(dev, cam, mesh)
+        dev.render(cam, [mesh])
     else:
         frames = 600
         fps = args.fps
         dev = deviceplot.Device(320, 200, mesh.name, {fps: fps})
-        print '[',
+        print 'Rendering {} frames at {} fps ['.format(frames, fps),
 
         for i in xrange(frames):
             sys.stdout.flush()
             sys.stdout.write('.')
-            render(dev, cam, mesh)
+            mesh.rotation.x += 0.0104
+            mesh.rotation.y += 0.0104
+            dev.render(cam, [mesh])
 
         print '] DONE'
 

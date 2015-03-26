@@ -32,9 +32,7 @@ def up():
     return Vector3(y=1.0)
 
 def swap(a, b):
-    temp = a
-    a = b
-    b = temp
+    return (b, a)
 
 class Vector3(object):
 

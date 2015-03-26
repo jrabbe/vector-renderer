@@ -2,7 +2,9 @@
 # encoding: utf-8
 
 from __future__ import division
+import sys
 
+# Local imports
 import vector2 as v2
 import vector3 as v3
 import matrix
@@ -88,6 +90,13 @@ class Device(object):
 
         return v2.Vector2(x, y)
 
+    def polygon(self, vertex0, vertex1, vertex2, color):
+        """
+        Get the polygon instance for the device
+        """
+        raise NotImplementedError
+
+
     def render(self, camera, meshes):
         """
         Render the provided meshes with the specified camera.
@@ -100,6 +109,7 @@ class Device(object):
         projection_matrix = matrix.perspective_fov_lh(0.78, self.screen_width / self.screen_height, 0.01, 1.0)
         # print 'projection matrix  = ', projection_matrix
 
+        self.z_buffer = [sys.maxint] * (self.screen_width * self.screen_height)
         self.begin_render()
 
         for i in range(len(meshes)):
@@ -117,23 +127,11 @@ class Device(object):
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                normal0 = vertex0.normal + vertex0.coordinates
-                normal1 = vertex1.normal + vertex1.coordinates
-                normal2 = vertex2.normal + vertex2.coordinates
+                color_value = 0.5
+                color = c4.Color4(color_value, color_value, color_value, 0.5)
 
-                if ((vertex0.coordinates).transform(world_matrix) - camera.position).dot((normal0).transform(world_matrix)) >= 0 and ((vertex1.coordinates).transform(world_matrix) - camera.position).dot((normal1).transform(world_matrix)) >= 0 and ((vertex2.coordinates).transform(world_matrix) - camera.position).dot((normal2).transform(world_matrix)) >= 0:
-                    continue
-
-                point0 = self.project(vertex0.coordinates, transformation)
-                point1 = self.project(vertex1.coordinates, transformation)
-                point2 = self.project(vertex2.coordinates, transformation)
-
-                color = 0.5
-                self.draw_triangle(point0, point1, point2, c4.Color4(color, color, color, 0.5))
-
-                self.draw_line(self.project(normal0, transformation), point0, c4.Color4(normal0.x, normal0.y, normal0.z, 0.5))
-                self.draw_line(self.project(normal1, transformation), point1, c4.Color4(normal1.x, normal1.y, normal1.z, 0.5))
-                self.draw_line(self.project(normal2, transformation), point2, c4.Color4(normal2.x, normal2.y, normal2.z, 0.5))
+                poly = self.polygon(vertex0, vertex1, vertex2, color)
+                poly.draw(world_matrix, transformation, self.project, camera)
 
         self.end_render()
 
