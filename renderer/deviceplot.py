@@ -17,8 +17,8 @@ class Device(d.Device):
         pd.size(screen_width, screen_height)
         self.canvas = pd.export(name + '.gif', fps=fps, loop=-1)
 
-    def polygon(self, vertex0, vertex1, vertex2, color):
-        return p.Polygon(vertex0, vertex1, vertex2, color, pd)
+    def polygon(self, vertex0, vertex1, vertex2, color, scene):
+        return p.Polygon(vertex0, vertex1, vertex2, color, scene, pd)
 
     def begin_render(self):
         pd.clear(all)
