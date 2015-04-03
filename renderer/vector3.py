@@ -7,8 +7,7 @@ import math
 
 def normalize(vector):
     result = vector.clone()
-    result.normalize()
-    return result
+    return result.normalize()
 
 def cross(a, b):
     return a.cross(b)

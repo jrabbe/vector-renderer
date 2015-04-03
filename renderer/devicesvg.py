@@ -10,11 +10,7 @@ class Device(d.Device):
 
     def __init__(self, screen_width, screen_height, name):
         d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
-        self.output_buffer = []
-
-        svg = '<svg viewBox="0 0 {screen_width} {screen_height}" xmlns="http://www.w3.org/2000/svg">'.format(screen_width=screen_width, screen_height=screen_height)
-        self.output_buffer.append(svg)
-        self.output_buffer.append('<g>')
+        self.output_buffer = { 'polygons': [], 'defs': [] }
 
     def to_svg_color(self, color, default='black'):
         if color is None:
@@ -36,9 +32,17 @@ class Device(d.Device):
         pass
 
     def present(self):
-        self.output_buffer.append('</g>')
-        self.output_buffer.append('</svg>')
+        output = []
+        svg = '<svg viewBox="0 0 {screen_width} {screen_height}" xmlns="http://www.w3.org/2000/svg">'.format(screen_width=self.screen_width, screen_height=self.screen_height)
+        output.append(svg)
+        output.append('<defs>')
+        output.extend(self.output_buffer.get('defs'))
+        output.append('</defs>')
+        output.append('<g>')
+        output.extend(self.output_buffer.get('polygons'))
+        output.append('</g>')
+        output.append('</svg>')
 
         with open(self.name + '.svg', 'w') as f:
-            f.writelines(map(lambda l: l + '\n', self.output_buffer))
+            f.writelines(map(lambda l: l + '\n', output))
 

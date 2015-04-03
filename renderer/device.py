@@ -102,8 +102,7 @@ class Device(object):
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                color_value = 0.5
-                color = c4.Color4(color_value, color_value, color_value, 0.5)
+                color = c4.Color4(0.0, 1.0, 1.0, 1.0)
 
                 poly = self.polygon(vertex0, vertex1, vertex2, color, scene)
                 poly.draw()

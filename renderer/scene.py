@@ -10,23 +10,27 @@ import vector3 as v3
 
 class Projection(object):
     """
+    A projection of a polygon into rendered 2D space.
     """
 
-    def __init__(self, camera, coordinates, normal, world_coordinates, world_normal):
+    def __init__(self, camera, coordinates, normal, world_coordinates, world_normal, light_normal):
         self.camera = camera
         self.coordinates = coordinates
         self.normal = normal
         self.world_coordinates = world_coordinates
         self.world_normal = world_normal
+        self.light_normal = light_normal
 
     def is_facing_camera(self):
         """
+        Check if this projection is facing the camera or not
         """
         return (self.world_coordinates - self.camera.position).dot(self.world_normal) < 0
 
 
 class Scene(object):
     """
+    The scene for the rendering, that is the camera, light, and projections.
     """
 
     def __init__(self, width, height, camera):
@@ -35,9 +39,11 @@ class Scene(object):
         self.camera = camera
         self.projection = matrix.perspective_fov_lh(0.78, width / height, 0.01, 1.0)
         self.z_buffer = [sys.maxint] * (width * height)
+        self.light = v3.Vector3(0, 10, 10)
 
     def set_mesh(self, mesh):
         """
+        Sets the mesh for the scene. Used to get the transformations on the mesh to be applied in the rendering.
         """
         rot = matrix.rotation_yaw_pitch_roll(mesh.rotation.y, mesh.rotation.x, mesh.rotation.z)
         tran = matrix.translation(mesh.position.x, mesh.position.y, mesh.position.z)
@@ -49,12 +55,25 @@ class Scene(object):
 
     def __constrain(self, point):
         """
+        Constrains the provided point to the width and height set for the scene.
+        This is done by scaling the x and y positions of the point.
         """
         x = int(point.x * self.width + self.width / 2.0)
         y = int(-point.y * self.height + self.height / 2.0)
 
         return v3.Vector3(x, y, point.z)
 
+    def __compute_n_dot_l(self, coords, normal, light):
+        """
+        Computes the dot product of the light direction and the vertex normal.
+        This computed value corresponds to the brightness of the vertex.
+
+        """
+        direction = light - coords
+        n = v3.normalize(normal)
+        d = v3.normalize(direction)
+
+        return max(0, v3.dot(n, d))
 
     def project(self, vertex):
         """
@@ -67,4 +86,8 @@ class Scene(object):
         world_coords = vertex.coordinates.transform(self.world)
         world_normal = vertex.normal.transform(self.world)
 
-        return Projection(self.camera, self.__constrain(point), self.__constrain(normal), world_coords, world_normal)
+        light_normal = self.__compute_n_dot_l(world_coords, world_normal, self.light)
+        if light_normal > 1:
+            print '!!! light_normal = ', light_normal
+
+        return Projection(self.camera, self.__constrain(point), self.__constrain(normal), world_coords, world_normal, light_normal)

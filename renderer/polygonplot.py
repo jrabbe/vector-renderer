@@ -11,7 +11,7 @@ class Polygon(p.Polygon):
         p.Polygon.__init__(self, vertex0, vertex1, vertex2, color, scene)
         self.pd = pd
 
-    def do_draw(self, points, color):
+    def do_draw(self, points, color, midpoint, point_transformation):
         self.pd.pen(0.1, join=self.pd.BEVEL)
         self.pd.stroke(0)
 
@@ -19,7 +19,7 @@ class Polygon(p.Polygon):
             c = self.pd.color(color.r, color.g, color.b, color.a)
             self.pd.fill(c)
 
-        points = map(lambda p: (p.x, p.y), points)
+        points = map(lambda p: (p.coordinates.x, p.coordinates.y), points)
         self.pd.bezier(points, close=True)
 
     def draw_line(self, point0, point1, color=None):

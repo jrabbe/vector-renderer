@@ -228,7 +228,12 @@ class Matrix(object):
         return result
 
     def __eq__(self, other):
-        return (self.m[0] == other.m[0] and self.m[1] == other.m[1] and self.m[2] == other.m[2] and self.m[3] == other.m[3] and self.m[4] == other.m[4] and self.m[5] == other.m[5] and self.m[6] == other.m[6] and self.m[7] == other.m[7] and self.m[8] == other.m[8] and self.m[9] == other.m[9] and self.m[10] == other.m[10] and self.m[11] == other.m[11] and self.m[12] == other.m[12] and self.m[13] == other.m[13] and self.m[14] == other.m[14] and self.m[15] == other.m[15]);
+        return (self.m[0] == other.m[0] and self.m[1] == other.m[1] and self.m[2] == other.m[2] and
+            self.m[3] == other.m[3] and self.m[4] == other.m[4] and self.m[5] == other.m[5] and
+            self.m[6] == other.m[6] and self.m[7] == other.m[7] and self.m[8] == other.m[8] and
+            self.m[9] == other.m[9] and self.m[10] == other.m[10] and self.m[11] == other.m[11] and
+            self.m[12] == other.m[12] and self.m[13] == other.m[13] and self.m[14] == other.m[14] and
+            self.m[15] == other.m[15]);
 
 
     def clone(self):

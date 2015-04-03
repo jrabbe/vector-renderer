@@ -27,3 +27,13 @@ class Color4(object):
     def get(self, attr, min_value=0.0, max_value=1.0, format=float):
         value = self.__getattribute__(attr)
         return format(value * (max_value - min_value) + min_value)
+
+    def clone(self):
+        return Color4(self.r, self.g, self.b, self.a)
+
+    def scale (self, factor):
+        self.r *= factor
+        self.g *= factor
+        self.b *= factor
+
+        return self
