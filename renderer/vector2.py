@@ -6,16 +6,32 @@ from __future__ import division
 import math
 
 def normalize(vector):
+    """
+    Returns a normalized copy of the provided vector.
+    """
     return vector.clone().normalize()
 
 def transform(vector, transformation):
+    """
+    Transforms the provided vector with the specified transformation.
+    """
     return vector.transform(transformation)
 
 def distance(a, b):
+    """
+    Finds the distance between the two vectors a and b.
+    """
     return len(a - b)
 
 def distance_squared(a, b):
     return (a - b).length_squared()
+
+def to_vector(vector):
+    """
+    Creates a Vector2 from the provided vector. This is done by taking the x and y coordinates
+    of the provided vector.
+    """
+    return Vector2(vector.x, vector.y)
 
 class Vector2(object):
 

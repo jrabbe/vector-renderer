@@ -11,7 +11,7 @@ class Polygon(p.Polygon):
         p.Polygon.__init__(self, vertex0, vertex1, vertex2, color, scene)
         self.pd = pd
 
-    def do_draw(self, points, color, midpoint, point_transformation):
+    def do_draw(self, points, base, color, point_transformation):
         self.pd.pen(0.1, join=self.pd.BEVEL)
         self.pd.stroke(0)
 

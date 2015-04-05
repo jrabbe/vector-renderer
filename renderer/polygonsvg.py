@@ -24,13 +24,13 @@ class Polygon(p.Polygon):
 
         return svg_color
 
-    def do_draw(self, points, color, midpoint, point_transformation):
+    def do_draw(self, points, base, color, point_transformation):
         stroke = 'black'
         line_width = 1
         # fill = self.to_svg_color(color)
         # points = map(lambda p: '{},{}'.format(p.x, p.y), points)
 
-        base_points = map(lambda a: '{},{}'.format(a[0], a[1]), [(0,0),(midpoint, 0.5), (1, 0)])
+        base_points = map(lambda a: '{},{}'.format(a.x, a.y), base)
         start_color = self.to_svg_color(color.clone().scale(points[0].light_normal))
         end_color = self.to_svg_color(color.clone().scale(points[1].light_normal))
 
