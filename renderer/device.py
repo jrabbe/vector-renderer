@@ -96,16 +96,22 @@ class Device(object):
 
         for mesh in meshes:
             scene.set_mesh(mesh)
+            polygons = []
 
             for face in mesh.faces:
                 vertex0 = mesh.vertices[face.a]
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                color = c4.Color4(0.0, 1.0, 1.0, 1.0)
+                color = c4.Color4(1.0, 0.0, 0.0, 1.0)
 
-                poly = self.polygon(vertex0, vertex1, vertex2, color, scene)
-                poly.draw()
+                polygon = self.polygon(vertex0, vertex1, vertex2, color, scene)
+                polygons.append(polygon)
+
+            polygons.sort()
+
+            for polygon in polygons:
+                polygon.draw()
 
         self.end_render()
 

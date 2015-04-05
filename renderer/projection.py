@@ -8,9 +8,10 @@ class Projection(object):
     A projection of a polygon into rendered 2D space.
     """
 
-    def __init__(self, camera, coordinates, normal, world_coordinates, world_normal, light_normal):
+    def __init__(self, camera, coordinates, projected_z, normal, world_coordinates, world_normal, light_normal):
         self.camera = camera
         self.coordinates = coordinates
+        self.projected_z = projected_z
         self.normal = normal
         self.world_coordinates = world_coordinates
         self.world_normal = world_normal

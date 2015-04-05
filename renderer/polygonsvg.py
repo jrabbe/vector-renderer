@@ -32,7 +32,7 @@ class Polygon(p.Polygon):
 
         base_points = map(lambda a: '{},{}'.format(a.x, a.y), base)
         start_color = self.to_svg_color(color.clone().scale(points[0].light_normal))
-        end_color = self.to_svg_color(color.clone().scale(points[1].light_normal))
+        end_color = self.to_svg_color(color.clone().scale(points[2].light_normal))
 
         grad_id = 'gradient-{}'.format(len(self.output_buffer.get('defs')))
         gradient = """
@@ -45,22 +45,6 @@ class Polygon(p.Polygon):
 
         fill = 'url(#{})'.format(grad_id)
         transform = 'matrix({}, {}, {}, {}, {}, {})'.format(point_transformation.m[0], point_transformation.m[3], point_transformation.m[1], point_transformation.m[4], point_transformation.m[2], point_transformation.m[5])
-
-        #
-        # Making a triangle:
-        # 1. Start with a base triangle A-B-C => 0,0-x,0.5-1,0 where x makes B map to the color of "its" texture
-        # 1a. The base triangle has a linear gradient from A-C where A is the lightest, C is the darkest,
-        #     and B has the position to give the right shade
-        # 2. Skew, translate, and rotate to make it fit with the points
-        # 3. Success (hopefully)
-
-        #
-        # Transformation:
-        # 1. A = [[xb1 xb2 xb3][yb1 yb2 yb3][1 1 1]]
-        # 2. B = [[xt1 xt2 xt3][yt1 yt2 yt3][1 1 1]]
-        # 3. M = B  * Inv(A) = B * (1/det(A) * transpose(A))
-        #
-        # Result should be 6 values that can be plugged into the "transform" property of an SVG primitive
 
         triangle = '<polygon points="{points}" fill="{fill}" transform="{transform}"></polygon>'.format(points=' '.join(base_points), stroke=stroke, fill=fill, line_width=line_width, transform=transform)
         self.output_buffer.get('polygons').append(triangle)
