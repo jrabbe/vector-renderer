@@ -4,7 +4,6 @@
 from __future__ import division
 
 import device as d
-import polygonsvg as p
 
 class Device(d.Device):
 
@@ -16,14 +15,53 @@ class Device(d.Device):
         if color is None:
             svg_color = default
         else:
-            svg_color = 'rgba({}, {}, {}, {})'.format(color.get('r', 0, 255, int),
+            svg_color = 'rgba({}, {}, {}, {})'.format(
+                color.get('r', 0, 255, int),
                 color.get('g', 0, 255, int),
                 color.get('b', 0, 255, int),
                 color.get('a', 0.0, 1.0, float))
+
         return svg_color
 
-    def polygon(self, vertex0, vertex1, vertex2, color, scene):
-        return p.Polygon(vertex0, vertex1, vertex2, color, scene, self.output_buffer)
+    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
+        points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)
+        start_color = self.to_svg_color(base_color.clone().scale(start_brightness))
+        end_color = self.to_svg_color(base_color.clone().scale(end_brightness))
+
+        grad_id = 'gradient-{}'.format(len(self.output_buffer.get('defs')))
+        gradient = """
+        <linearGradient id="{}" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="{}"/>
+            <stop offset="100%" stop-color="{}"/>
+        </linearGradient>
+        """.format(grad_id, start_color, end_color)
+        self.output_buffer.get('defs').append(gradient)
+
+        fill = 'url(#{})'.format(grad_id)
+        transform = 'matrix({}, {}, {}, {}, {}, {})'.format(transformation.m[0],
+            transformation.m[3], transformation.m[1], transformation.m[4],
+            transformation.m[2], transformation.m[5])
+
+        triangle = """
+        <polygon points="{points}" fill="{fill}" transform="{transform}">
+        </polygon>""".format(points=' '.join(points), fill=fill, transform=transform)
+        self.output_buffer.get('polygons').append(triangle)
+
+    def draw_line(self, point0, point1, color=None):
+        dist = len(point0 - point1)
+
+        if dist < 2:
+            return
+
+        stroke = self.to_svg_color(color, 'red')
+        line = """
+        <line x1="{point0.x}"
+              y1="{point0.y}"
+              x2="{point1.x}"
+              y2="{point1.y}"
+              stroke="{stroke}"
+              stroke-width="{line_width}"></line>""".format(point0=point0, point1=point1, stroke=stroke, line_width=1)
+        self.output_buffer.get('polygons').append(line)
 
     def begin_render(self):
         pass

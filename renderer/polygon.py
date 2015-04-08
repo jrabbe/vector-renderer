@@ -11,13 +11,14 @@ import matrix3 as m3
 
 class Polygon(object):
 
-    def __init__(self, vertex0, vertex1, vertex2, color, scene):
+    def __init__(self, vertex0, vertex1, vertex2, color, scene, device):
 
         self.vertex0 = vertex0
         self.vertex1 = vertex1
         self.vertex2 = vertex2
         self.color = color
         self.scene = scene
+        self.device = device
 
         self.projection0 = self.scene.project(self.vertex0)
         self.projection1 = self.scene.project(self.vertex1)
@@ -47,7 +48,7 @@ class Polygon(object):
 
     def draw_normal(self, point):
         color = c4.Color4(point.world_normal.x, point.world_normal.y, point.world_normal.z, 0.5)
-        self.draw_line(point.normal, point.coordinates, color)
+        self.device.draw_line(point.normal, point.coordinates, color)
 
     def draw(self):
         """
@@ -62,16 +63,4 @@ class Polygon(object):
         point_coords = map(lambda p: p.coordinates, self.points)
         point_transformation = m3.find_transformation(base, point_coords)
 
-        self.do_draw(self.points, base, self.color, point_transformation)
-
-    def do_draw(self, points, base, color, point_transformation):
-        """
-        Perform the actual drawing, to be implemented by specific subclasses
-        """
-        raise NotImplementedError
-
-    def draw_line(self, point0, point1, color):
-        """
-        Draw a line onto the output device
-        """
-        raise NotImplementedError
+        self.device.draw_triangle(base, point_transformation, self.points[0].light_normal, self.points[2].light_normal, self.color)

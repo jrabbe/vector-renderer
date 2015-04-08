@@ -4,7 +4,6 @@
 from __future__ import division
 
 import plotdevice as pd
-import polygonplot as p
 import device as d
 
 class Device(d.Device):
@@ -17,9 +16,6 @@ class Device(d.Device):
         pd.size(screen_width, screen_height)
         self.canvas = pd.export(name + '.gif', fps=fps, loop=-1)
 
-    def polygon(self, vertex0, vertex1, vertex2, color, scene):
-        return p.Polygon(vertex0, vertex1, vertex2, color, scene, pd)
-
     def begin_render(self):
         pd.clear(all)
 
@@ -28,3 +24,27 @@ class Device(d.Device):
 
     def present(self):
         self.canvas.finish()
+
+    def __pd_color(self, color):
+        return pd.color(color.r, color.g, color.b, color.a)
+
+    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
+        pd.pen(0.1, join=pd.BEVEL)
+        pd.stroke(0)
+
+        if base_color is not None:
+            cs = self.__pd_color(base_color.clone().scale(start_brightness))
+            ce = self.__pd_color(base_color.clone().scale(end_brightness))
+            pd.fill(cs, ce)
+
+        base_points = map(lambda p: p.apply_affine(transformation), base_points)
+        points = map(lambda p: (p.x, p.y), base_points)
+        pd.bezier(points, close=True)
+
+    def draw_line(self, point0, point1, color=None):
+        pd.pen(0.1)
+        if color is not None:
+            c = self.__pd_color(color)
+            pd.stroke(c)
+
+        pd.line(point0.x, point0.y, point1.x, point1.y)
