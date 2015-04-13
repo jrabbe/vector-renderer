@@ -19,7 +19,7 @@ if __name__ == '__main__':
         help='The path to the directory containing the primitives (default: %(default)s)')
     parser.add_argument('--fps', type=int, nargs='?', default=30,
         help='The number of frames per second for an animation when using the \'gif\' engine (default: %(default)s)')
-    parser.add_argument('-e', '--engine', choices=['svg', 'gif'], type=str, default='gif',
+    parser.add_argument('-e', '--engine', choices=['svg', 'gif', 'png'], type=str, default='gif',
         help='The engine to use (default: %(default)s)')
     parser.add_argument('-o', '--output', type=str, default='',
         help='The output directory to use for outputting the rendered file. Will be created if it does not exist (default: the current directory)')
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         mesh.rotation.x += 0.3
         mesh.rotation.y -= 0.4
         dev.render(cam, [mesh])
-    else:
+    elif args.engine == 'gif':
         frames = 600
         fps = args.fps
         dev = deviceplot.Device(320, 200, '/'.join([output, mesh.name]), {fps: fps})
@@ -66,5 +66,13 @@ if __name__ == '__main__':
             dev.render(cam, [mesh])
 
         print '] DONE'
+    elif args.engine == 'png':
+        dev = deviceplot.Device(1600, 1000, '/'.join([output, mesh.name]), {'animated': False})
+        mesh.rotation.x += 0.3
+        mesh.rotation.y -= 0.4
+        dev.render(cam, [mesh])
+    else:
+        sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
+        sys.exit(1)
 
     dev.present()

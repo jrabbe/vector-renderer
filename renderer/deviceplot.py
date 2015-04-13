@@ -12,9 +12,13 @@ class Device(d.Device):
         d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
 
         fps = options.get('fps', 30)
+        self.animated = options.get('animated', True)
 
         pd.size(screen_width, screen_height)
-        self.canvas = pd.export(name + '.gif', fps=fps, loop=-1)
+        if self.animated:
+            self.canvas = pd.export(name + '.gif', fps=fps, loop=-1)
+        else:
+            self.canvas = pd.export(name + '.png')
 
     def begin_render(self):
         pd.clear(all)
