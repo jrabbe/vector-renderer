@@ -8,12 +8,13 @@ import color4 as c4
 
 class Polygon(object):
 
-    def __init__(self, vertex0, vertex1, vertex2, color):
+    def __init__(self, vertex0, vertex1, vertex2, color, scene):
 
         self.vertex0 = vertex0
         self.vertex1 = vertex1
         self.vertex2 = vertex2
         self.color = color
+        self.scene = scene
 
         self.order()
 
@@ -33,32 +34,29 @@ class Polygon(object):
     def interpolate(self, minval, maxval, gradient):
         return minval + (maxval - minval) * self.clamp(gradient)
 
-    def is_backface(self, vertex, world_matrix, camera):
-        world_coordinates = (vertex.coordinates).transform(world_matrix)
-        world_normal = (vertex.normal + vertex.coordinates).transform(world_matrix)
-        return (world_coordinates - camera.position).dot(world_normal) >= 0
+    def is_backface(self, vertex):
+        return not self.scene.is_facing_camera(vertex)
 
-    def draw_normal(self, vertex, transformation, project):
-        coords = project(vertex.coordinates, transformation)
-        nc = vertex.normal + vertex.coordinates
-        normal = project(nc, transformation)
-        self.draw_line(normal, coords, c4.Color4(nc.x, nc.y, nc.z, 0.5))
+    def draw_normal(self, point):
+        color = c4.Color4(point.world_normal.x, point.world_normal.y, point.world_normal.z, 0.5)
+        self.draw_line(point.normal, point.coordinates, color)
 
-    def draw(self, world_matrix, transformation, project, camera):
+    def draw(self):
         """
         Draw this polygon with the provided world matrix and transformation
         """
-        if self.is_backface(self.vertex0, world_matrix, camera) and self.is_backface(self.vertex1, world_matrix, camera) and self.is_backface(self.vertex2, world_matrix, camera):
+
+        point0 = self.scene.project(self.vertex0)
+        point1 = self.scene.project(self.vertex1)
+        point2 = self.scene.project(self.vertex2)
+
+        if not (point0.is_facing_camera() or point1.is_facing_camera() or point2.is_facing_camera()):
             return
 
-        point0 = project(self.vertex0.coordinates, transformation)
-        point1 = project(self.vertex1.coordinates, transformation)
-        point2 = project(self.vertex2.coordinates, transformation)
-
-        self.do_draw([point0, point1, point2], self.color)
-        self.draw_normal(self.vertex0, transformation, project)
-        self.draw_normal(self.vertex1, transformation, project)
-        self.draw_normal(self.vertex2, transformation, project)
+        self.do_draw([point0.coordinates, point1.coordinates, point2.coordinates], self.color)
+        self.draw_normal(point0)
+        self.draw_normal(point1)
+        self.draw_normal(point2)
 
     def do_draw(self, points, color):
         """

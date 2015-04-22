@@ -7,8 +7,8 @@ import polygon as p
 
 class Polygon(p.Polygon):
 
-    def __init__ (self, vertex0, vertex1, vertex2, color, pd):
-        p.Polygon.__init__(self, vertex0, vertex1, vertex2, color)
+    def __init__ (self, vertex0, vertex1, vertex2, color, scene, pd):
+        p.Polygon.__init__(self, vertex0, vertex1, vertex2, color, scene)
         self.pd = pd
 
     def do_draw(self, points, color):

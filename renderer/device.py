@@ -9,6 +9,7 @@ import vector2 as v2
 import vector3 as v3
 import matrix
 import color4 as c4
+import scene as s
 
 # http://en.wikipedia.org/wiki/Back-face_culling
 # Possibly doing the dot product for each vertex normal and the camera->vertex vector, and
@@ -75,22 +76,7 @@ class Device(object):
         """
         raise NotImplementedError
 
-    def project(self, vertex, transformation):
-        """
-        Project the provided vertex onto the screen using the provided transformation
-
-        vertex -- the vertex to project
-        transformation -- the transformation used in the projection
-        """
-        point = vertex.transform(transformation)
-
-        # Transform the x and y coordinates of the projection to the screen size
-        x = int(point.x * self.screen_width + self.screen_width / 2.0)
-        y = int(-point.y * self.screen_height + self.screen_height / 2.0)
-
-        return v2.Vector2(x, y)
-
-    def polygon(self, vertex0, vertex1, vertex2, color):
+    def polygon(self, vertex0, vertex1, vertex2, color, scene):
         """
         Get the polygon instance for the device
         """
@@ -104,23 +90,12 @@ class Device(object):
         camera -- the camera to use for rendering
         meshes -- the meshes to render
         """
-        view_matrix = matrix.look_at_lh(camera.position, camera.target, v3.up())
-        # print 'view matrix = ', view_matrix
-        projection_matrix = matrix.perspective_fov_lh(0.78, self.screen_width / self.screen_height, 0.01, 1.0)
-        # print 'projection matrix  = ', projection_matrix
 
-        self.z_buffer = [sys.maxint] * (self.screen_width * self.screen_height)
+        scene = s.Scene(self.screen_width, self.screen_height, camera)
         self.begin_render()
 
-        for i in range(len(meshes)):
-            mesh = meshes[i]
-            rot = matrix.rotation_yaw_pitch_roll(mesh.rotation.y, mesh.rotation.x, mesh.rotation.z)
-            tran = matrix.translation(mesh.position.x, mesh.position.y, mesh.position.z)
-            world_matrix = rot * tran
-            # print 'world matrix = ', world_matrix
-            world_view = world_matrix * view_matrix
-
-            transformation = world_view * projection_matrix
+        for mesh in meshes:
+            scene.set_mesh(mesh)
 
             for face in mesh.faces:
                 vertex0 = mesh.vertices[face.a]
@@ -130,8 +105,8 @@ class Device(object):
                 color_value = 0.5
                 color = c4.Color4(color_value, color_value, color_value, 0.5)
 
-                poly = self.polygon(vertex0, vertex1, vertex2, color)
-                poly.draw(world_matrix, transformation, self.project, camera)
+                poly = self.polygon(vertex0, vertex1, vertex2, color, scene)
+                poly.draw()
 
         self.end_render()
 

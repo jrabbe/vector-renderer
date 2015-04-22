@@ -7,8 +7,8 @@ import polygon as p
 
 class Polygon(p.Polygon):
 
-    def __init__ (self, vertex0, vertex1, vertex2, color, output_buffer):
-        p.Polygon.__init__(self, vertex0, vertex1, vertex2, color)
+    def __init__ (self, vertex0, vertex1, vertex2, color, scene, output_buffer):
+        p.Polygon.__init__(self, vertex0, vertex1, vertex2, color, scene)
         self.output_buffer = output_buffer
 
     def to_svg_color(self, color, default='black'):

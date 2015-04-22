@@ -26,8 +26,8 @@ class Device(d.Device):
                 color.get('a', 0.0, 1.0, float))
         return svg_color
 
-    def polygon(self, vertex0, vertex1, vertex2, color):
-        return p.Polygon(vertex0, vertex1, vertex2, color, self.output_buffer)
+    def polygon(self, vertex0, vertex1, vertex2, color, scene):
+        return p.Polygon(vertex0, vertex1, vertex2, color, scene, self.output_buffer)
 
     def begin_render(self):
         pass
