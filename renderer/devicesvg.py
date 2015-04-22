@@ -4,6 +4,7 @@
 from __future__ import division
 
 import device as d
+import polygonsvg as p
 
 class Device(d.Device):
 
@@ -12,18 +13,8 @@ class Device(d.Device):
         self.output_buffer = []
 
         svg = '<svg viewBox="0 0 {screen_width} {screen_height}" xmlns="http://www.w3.org/2000/svg">'.format(screen_width=screen_width, screen_height=screen_height)
-        self.output_buffer.append(svg + '\n')
-        self.output_buffer.append('<g>\n')
-
-    def draw_line(self, point1, point2, color=None):
-        dist = len(point1 - point2)
-
-        if dist < 2:
-            return
-
-        stroke = self.to_svg_color(color, 'red')
-        line = '<line x1="{point1.x}" y1="{point1.y}" x2="{point2.x}" y2="{point2.y}" stroke="{stroke}" stroke-width="{line_width}"></line>'.format(point1=point1, point2=point2, stroke=stroke, line_width=1)
-        self.output_buffer.append(line + '\n')
+        self.output_buffer.append(svg)
+        self.output_buffer.append('<g>')
 
     def to_svg_color(self, color, default='black'):
         if color is None:
@@ -33,17 +24,10 @@ class Device(d.Device):
                 color.get('g', 0, 255, int),
                 color.get('b', 0, 255, int),
                 color.get('a', 0.0, 1.0, float))
-            return svg_color
+        return svg_color
 
-    def draw_triangle(self, point0, point1, point2, color=None):
-        points = []
-        points.append(str(point0.x) + ',' + str(point0.y))
-        points.append(str(point1.x) + ',' + str(point1.y))
-        points.append(str(point2.x) + ',' + str(point2.y))
-        fill = self.to_svg_color(color)
-
-        triangle = '<polygon points="{points}" stroke="{stroke}" fill="{fill}" stroke-linejoin="bevel" stroke-width="{line_width}"></polygon>'.format(points=' '.join(points), stroke='black', fill=fill, line_width=1)
-        self.output_buffer.append(triangle + '\n')
+    def polygon(self, vertex0, vertex1, vertex2, color):
+        return p.Polygon(vertex0, vertex1, vertex2, color, self.output_buffer)
 
     def begin_render(self):
         pass
@@ -52,9 +36,9 @@ class Device(d.Device):
         pass
 
     def present(self):
-        self.output_buffer.append('</g>\n')
-        self.output_buffer.append('</svg>\n')
+        self.output_buffer.append('</g>')
+        self.output_buffer.append('</svg>')
 
         with open(self.name + '.svg', 'w') as f:
-            f.writelines(self.output_buffer)
+            f.writelines(map(lambda l: l + '\n', self.output_buffer))
 
