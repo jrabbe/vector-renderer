@@ -2,6 +2,9 @@
 # encoding: utf-8
 
 from __future__ import division
+import os
+import os.path as path
+import sys
 
 import argparse
 import sys
@@ -18,8 +21,22 @@ if __name__ == '__main__':
         help='The number of frames per second for an animation when using the \'gif\' engine (default: %(default)s)')
     parser.add_argument('-e', '--engine', choices=['svg', 'gif'], type=str, default='gif',
         help='The engine to use (default: %(default)s)')
+    parser.add_argument('-o', '--output', type=str, default='',
+        help='The output directory to use for outputting the rendered file. Will be created if it does not exist (default: the current directory)')
 
     args = parser.parse_args()
+
+    output = args.output
+    output = path.abspath(output)
+    print 'Outputting rendered file(s) to ', output
+    if not path.exists(output):
+        print 'Output directory does not exist, creating.'
+        os.mkdir(output)
+    elif not path.isdir(output):
+        print 'Output location is not a directory, exiting.'
+        sys.exit(1)
+
+
 
     print 'Reading geometry for ', args.part
     g = geometryreader.GeometryReader(args.primitives)
@@ -31,14 +48,14 @@ if __name__ == '__main__':
     cam.target = vector3.Vector3(0, 0, 0)
 
     if args.engine == 'svg':
-        dev = devicesvg.Device(1600, 1000, mesh.name)
+        dev = devicesvg.Device(1600, 1000, '/'.join([output, mesh.name]))
         mesh.rotation.x += 0.3
         mesh.rotation.y -= 0.4
         dev.render(cam, [mesh])
     else:
         frames = 600
         fps = args.fps
-        dev = deviceplot.Device(320, 200, mesh.name, {fps: fps})
+        dev = deviceplot.Device(320, 200, '/'.join([output, mesh.name]), {fps: fps})
         print 'Rendering {} frames at {} fps ['.format(frames, fps),
 
         for i in xrange(frames):
