@@ -11,20 +11,26 @@ import matrix3 as m3
 
 class Polygon(object):
 
-    def __init__(self, vertex0, vertex1, vertex2, color, scene):
+    def __init__(self, vertex0, vertex1, vertex2, color, scene, device):
 
         self.vertex0 = vertex0
         self.vertex1 = vertex1
         self.vertex2 = vertex2
         self.color = color
         self.scene = scene
+        self.device = device
 
         self.projection0 = self.scene.project(self.vertex0)
         self.projection1 = self.scene.project(self.vertex1)
         self.projection2 = self.scene.project(self.vertex2)
 
+        self.vertices = [self.vertex0, self.vertex1, self.vertex2]
         self.points = [self.projection0, self.projection1, self.projection2]
-        self.average_z = reduce(lambda acc, pt: acc + pt.world_coordinates.z, self.points, 0) / 3
+
+        self.average_z = reduce(lambda acc, pt: acc + pt.coordinates.transform(self.scene.world_view).z, self.vertices, 0) / 3
+
+    def __cmp__(self, other):
+        return cmp(other.average_z, self.average_z)
 
     def clamp(self, value, minval=0, maxval=1):
         return max(minval, min(value, minval))
@@ -35,14 +41,14 @@ class Polygon(object):
     def __find_midpoint(self, ln0, ln1, ln2):
         return (ln1 - ln0) / (ln2 - ln0) if ln2 - ln0 != 0 else 0
 
-    def draw_normal(self, point):
-        color = c4.Color4(point.world_normal.x, point.world_normal.y, point.world_normal.z, 0.5)
-        self.draw_line(point.normal, point.coordinates, color)
-
     def __find_base(self, points):
         points.sort(cmp=lambda x, y: cmp(x.light_normal, y.light_normal))
         midpoint = self.__find_midpoint(points[0].light_normal, points[1].light_normal, points[2].light_normal)
         return [v2.Vector2(0, 0), v2.Vector2(midpoint, 0.5), v2.Vector2(1, 0)]
+
+    def draw_normal(self, point):
+        color = c4.Color4(point.world_normal.x, point.world_normal.y, point.world_normal.z, 0.5)
+        self.device.draw_line(point.normal, point.coordinates, color)
 
     def draw(self):
         """
@@ -57,16 +63,4 @@ class Polygon(object):
         point_coords = map(lambda p: p.coordinates, self.points)
         point_transformation = m3.find_transformation(base, point_coords)
 
-        self.do_draw(self.points, base, self.color, point_transformation)
-
-    def do_draw(self, points, base, color, point_transformation):
-        """
-        Perform the actual drawing, to be implemented by specific subclasses
-        """
-        raise NotImplementedError
-
-    def draw_line(self, point0, point1, color):
-        """
-        Draw a line onto the output device
-        """
-        raise NotImplementedError
+        self.device.draw_triangle(base, point_transformation, self.points[0].light_normal, self.points[2].light_normal, self.color)

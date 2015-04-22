@@ -10,24 +10,7 @@ import vector3 as v3
 import matrix
 import color4 as c4
 import scene as s
-
-# http://en.wikipedia.org/wiki/Back-face_culling
-# Possibly doing the dot product for each vertex normal and the camera->vertex vector, and
-# discarding each triangle where all dot products are >= 0 => ∀[(Vi-C) · Ni ≥ 0]
-#
-# Pseudo code to calculate face normal based on vertex points and normals
-#
-# Vec3 CalcNormalOfFace( Vec3 pPositions[3], Vec3 pNormals[3] )
-# {
-#     Vec3 p0 = pPositions[1] - pPositions[0];
-#     Vec3 p1 = pPositions[2] - pPositions[0];
-#     Vec3 faceNormal = crossProduct( p0, p1 );
-
-#     Vec3 vertexNormal = pNormals[0]; // or you can average 3 normals.
-#     float dot = dotProduct( faceNormal, vertexNormal );
-
-#     return ( dot < 0.0f ) ? -faceNormal : faceNormal;
-# }
+import polygon as p
 
 class Device(object):
     """
@@ -54,11 +37,10 @@ class Device(object):
         """
         raise NotImplementedError
 
-    def draw_triangle(self, point0, point1, point2, color=None):
+    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
         """
         Draw a point at the provided point
 
-        point -- the point to draw to the output device
         """
         raise NotImplementedError
 
@@ -80,8 +62,7 @@ class Device(object):
         """
         Get the polygon instance for the device
         """
-        raise NotImplementedError
-
+        return p.Polygon(vertex0, vertex1, vertex2, color, scene, self)
 
     def render(self, camera, meshes):
         """
@@ -96,16 +77,22 @@ class Device(object):
 
         for mesh in meshes:
             scene.set_mesh(mesh)
+            polygons = []
 
             for face in mesh.faces:
                 vertex0 = mesh.vertices[face.a]
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                color = c4.Color4(0.0, 1.0, 1.0, 1.0)
+                color = c4.Color4(1.0, 0.0, 0.0, 1.0)
 
-                poly = self.polygon(vertex0, vertex1, vertex2, color, scene)
-                poly.draw()
+                polygon = self.polygon(vertex0, vertex1, vertex2, color, scene)
+                polygons.append(polygon)
+
+            polygons.sort()
+
+            for polygon in polygons:
+                polygon.draw()
 
         self.end_render()
 

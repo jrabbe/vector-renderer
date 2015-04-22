@@ -76,7 +76,13 @@ class Vector2(object):
     def clone(self):
         return Vector2(self.x, self.y)
 
-    def transform(self, transformation):
-        x = (self.x * transformation.m[0]) + (self.y * transformation.m[4])
-        y = (self.x * transformation.m[1]) + (self.y * transformation.m[5])
+    def apply_affine(self, transformation):
+        x = self.x * transformation.m[0] + self.y * transformation.m[1] + transformation.m[2]
+        y = self.x * transformation.m[3] + self.y * transformation.m[4] + transformation.m[5]
         return Vector2(x, y)
+
+    def transform(self, transformation):
+        x = (self.x * transformation.m[0]) + (self.y * transformation.m[3]) + transformation.m[6]
+        y = (self.x * transformation.m[1]) + (self.y * transformation.m[4]) + transformation.m[7]
+        w = (self.x * transformation.m[2]) + (self.y * transformation.m[5]) + transformation.m[8]
+        return Vector2(x / w, y / w)

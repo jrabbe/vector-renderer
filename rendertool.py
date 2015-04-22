@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     if args.engine == 'svg':
         dev = devicesvg.Device(1600, 1000, mesh.name)
-        mesh.rotation.x += 0.2
+        mesh.rotation.x += 0.3
         mesh.rotation.y -= 0.4
         dev.render(cam, [mesh])
     else:

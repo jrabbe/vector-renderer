@@ -61,8 +61,8 @@ class Scene(object):
         Project the vertex into the world and view
         """
 
-        point = v2.to_vector(vertex.coordinates.transform(self.transformation))
-        normal = v2.to_vector((vertex.normal + vertex.coordinates).transform(self.transformation))
+        point = vertex.coordinates.transform(self.transformation)
+        normal = (vertex.normal + vertex.coordinates).transform(self.transformation)
 
         world_coords = vertex.coordinates.transform(self.world)
         world_normal = vertex.normal.transform(self.world)
@@ -71,4 +71,4 @@ class Scene(object):
         if light_normal > 1:
             print '!!! light_normal = ', light_normal
 
-        return p.Projection(self.camera, self.__constrain(point), self.__constrain(normal), world_coords, world_normal, light_normal)
+        return p.Projection(self.camera, self.__constrain(point), point.z, self.__constrain(normal), world_coords, world_normal, light_normal)
