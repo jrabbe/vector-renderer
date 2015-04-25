@@ -34,7 +34,7 @@ if __name__ == '__main__':
         help='The path to the directory containing the primitives (default: %(default)s)')
     parser.add_argument('--fps', type=int, nargs='?', default=30,
         help='The number of frames per second for an animation when using the \'gif\' device (default: %(default)s)')
-    parser.add_argument('-d', '--device', choices=['svg', 'gif', 'png'], type=str, default='gif',
+    parser.add_argument('-d', '--device', choices=['svg', 'gif', 'png', 'pil'], type=str, default='gif',
         help='The output device to use (default: %(default)s)')
     parser.add_argument('-o', '--output', type=str, default='',
         help='The output directory to use for outputting the rendered file. Will be created if it does not exist (default: the current directory)')
@@ -84,6 +84,8 @@ if __name__ == '__main__':
                 dev = devicesvg.Device(width, height, filename)
             elif args.device == 'png':
                 dev = deviceplot.Device(width, height, filename, {'animated': False})
+            elif args.device == 'pil':
+                dev = devicepil.Device(1600, 1000, filename)
             else:
                 sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
                 sys.exit(1)
