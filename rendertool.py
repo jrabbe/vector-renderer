@@ -36,43 +36,45 @@ if __name__ == '__main__':
         print 'Output location is not a directory, exiting.'
         sys.exit(1)
 
-
-
     print 'Reading geometry for ', args.part
     g = geometryreader.GeometryReader(args.primitives)
-    mesh = g.read(args.part)
+    m = g.read(args.part)
 
     print 'Creating camera'
     cam = camera.Camera()
     cam.position = vector3.Vector3(0, 0, 10)
     cam.target = vector3.Vector3(0, 0, 0)
 
-    if args.device == 'svg':
-        dev = devicesvg.Device(1600, 1000, '/'.join([output, mesh.name]))
-        mesh.rotation.x += 0.3
-        mesh.rotation.y -= 0.4
-        dev.render(cam, [mesh])
-    elif args.device == 'gif':
+    filename = '/'.join([output, m.name])
+
+    if args.device == 'gif':
         frames = 600
         fps = args.fps
-        dev = deviceplot.Device(320, 200, '/'.join([output, mesh.name]), {fps: fps})
+        dev = deviceplot.Device(320, 200, filename, {fps: fps})
         print 'Rendering {} frames at {} fps ['.format(frames, fps),
 
         for i in xrange(frames):
             sys.stdout.flush()
             sys.stdout.write('.')
-            mesh.rotation.x += 0.0104
-            mesh.rotation.y += 0.0104
-            dev.render(cam, [mesh])
+            m.rotation.x += 0.0104
+            m.rotation.y += 0.0104
+            dev.render(cam, [m])
 
         print '] DONE'
-    elif args.device == 'png':
-        dev = deviceplot.Device(1600, 1000, '/'.join([output, mesh.name]), {'animated': False})
-        mesh.rotation.x += 0.3
-        mesh.rotation.y -= 0.4
-        dev.render(cam, [mesh])
     else:
-        sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
-        sys.exit(1)
+        m.rotation.x = 0.3
+        m.rotation.y = -0.4
+        width = 1600
+        height = 1000
+
+        if args.device == 'svg':
+            dev = devicesvg.Device(width, height, filename)
+        elif args.device == 'png':
+            dev = deviceplot.Device(width, height, filename, {'animated': False})
+        else:
+            sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
+            sys.exit(1)
+
+        dev.render(cam, [m])
 
     dev.present()
