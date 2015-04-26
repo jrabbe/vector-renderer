@@ -55,5 +55,6 @@ class Polygon(object):
         base = self.__find_base(self.points)
         point_coords = map(lambda p: p.coordinates, self.points)
         point_transformation = m3.find_transformation(base, point_coords)
+        z_values = map(lambda p: p.projected_z, self.points)
 
-        self.device.draw_triangle(base, point_transformation, self.points[0].brightness, self.points[2].brightness, self.color)
+        self.device.draw_triangle(base, z_values, point_transformation, self.points[0].brightness, self.points[2].brightness, self.color)

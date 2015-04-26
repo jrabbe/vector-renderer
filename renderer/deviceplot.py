@@ -33,7 +33,7 @@ class Device(d.Device):
     def __pd_color(self, color):
         return pd.color(color.r, color.g, color.b, color.a)
 
-    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
+    def draw_triangle(self, base_points, z_values, transformation, start_brightness, end_brightness, base_color=None):
         pd.pen(0.1, join=pd.BEVEL)
         pd.stroke(0)
 

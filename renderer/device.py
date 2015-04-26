@@ -69,7 +69,7 @@ class Device(object):
         """
         raise NotImplementedError
 
-    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
+    def draw_triangle(self, base_points, z_values, transformation, start_brightness, end_brightness, base_color=None):
         """
         Draw a point at the provided point
 

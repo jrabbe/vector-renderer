@@ -28,8 +28,7 @@ class Device(d.Device):
 
         return svg_color
 
-    def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
-
+    def draw_triangle(self, base_points, z_values, transformation, start_brightness, end_brightness, base_color=None):
         points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)
 
         start_color = self.to_svg_color(base_color.scaled(start_brightness))
