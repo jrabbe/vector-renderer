@@ -24,8 +24,6 @@ class Filebuffer(object):
         self.__offset = 0
         self.__size = len(self.__buffer)
 
-        print 'read ', self.__size, ' bytes from ', filepath
-
     def getinteger(self):
         return self.getforformat(self.__intformat)
 

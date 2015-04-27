@@ -29,9 +29,11 @@ class Device(d.Device):
         return svg_color
 
     def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
+
         points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)
-        start_color = self.to_svg_color(base_color.clone().scale(start_brightness))
-        end_color = self.to_svg_color(base_color.clone().scale(end_brightness))
+
+        start_color = self.to_svg_color(base_color.scaled(start_brightness))
+        end_color = self.to_svg_color(base_color.scaled(end_brightness))
 
         grad_id = 'gradient-{}'.format(len(self.output_buffer.get('defs')))
         attributes = {
@@ -50,10 +52,11 @@ class Device(d.Device):
         attributes = {
             'points': ' '.join(points),
             'fill': 'url(#{})'.format(grad_id),
-            'transform': 'matrix({}, {}, {}, {}, {}, {})'.format(transformation.m[0],
-                transformation.m[3], transformation.m[1], transformation.m[4],
-                transformation.m[2], transformation.m[5])
+            'transform': 'matrix({}, {}, {}, {}, {}, {})'.format(
+                transformation.m[0], transformation.m[1], transformation.m[3],
+                transformation.m[4], transformation.m[6], transformation.m[7])
         }
+
         triangle = ET.Element('polygon', attrib=attributes)
         self.output_buffer.get('polygons').append(triangle)
 

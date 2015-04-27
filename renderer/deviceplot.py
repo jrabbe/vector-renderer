@@ -37,11 +37,11 @@ class Device(d.Device):
         pd.stroke(0)
 
         if base_color is not None:
-            cs = self.__pd_color(base_color.clone().scale(start_brightness))
-            ce = self.__pd_color(base_color.clone().scale(end_brightness))
+            cs = self.__pd_color(base_color.scaled(start_brightness))
+            ce = self.__pd_color(base_color.scaled(end_brightness))
             pd.fill(cs, ce)
 
-        base_points = map(lambda p: p.apply_affine(transformation), base_points)
+        base_points = map(lambda p: p.transform(transformation), base_points)
         points = map(lambda p: (p.x, p.y), base_points)
         pd.bezier(points, close=True)
 

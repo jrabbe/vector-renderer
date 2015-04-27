@@ -3,7 +3,7 @@
 
 from __future__ import division
 
-class Color4(object):
+class Color(object):
 
     def __init__(self, r, g, b, a=1.0):
         """
@@ -29,11 +29,14 @@ class Color4(object):
         return format(value * (max_value - min_value) + min_value)
 
     def clone(self):
-        return Color4(self.r, self.g, self.b, self.a)
+        return Color(self.r, self.g, self.b, self.a)
 
-    def scale (self, factor):
+    def scale(self, factor):
         self.r *= factor
         self.g *= factor
         self.b *= factor
 
         return self
+
+    def scaled(self, factor):
+        return self.clone().scale(factor)

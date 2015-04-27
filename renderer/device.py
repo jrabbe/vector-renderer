@@ -5,9 +5,6 @@ from __future__ import division
 import sys
 
 # Local imports
-import vector2 as v2
-import vector3 as v3
-import matrix
 import color4 as c4
 import scene as s
 import polygon as p
@@ -84,7 +81,7 @@ class Device(object):
                 vertex1 = mesh.vertices[face.b]
                 vertex2 = mesh.vertices[face.c]
 
-                color = c4.Color4(1.0, 0.0, 0.0, 1.0)
+                color = c4.Color(1.0, 0.0, 0.0, 1.0)
 
                 polygon = self.polygon(vertex0, vertex1, vertex2, color, scene)
                 polygons.append(polygon)

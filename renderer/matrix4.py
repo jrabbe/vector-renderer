@@ -48,7 +48,7 @@ def rotation_z(angle):
     return result
 
 def rotation_yaw_pitch_roll(yaw, pitch, roll):
-    return rotation_z(roll) * rotation_x(pitch) * rotation_y(yaw);
+    return (rotation_z(roll) * rotation_x(pitch)) * rotation_y(yaw);
 
 def scaling(x, y, z):
     result = Matrix(identity=True)
@@ -78,13 +78,9 @@ def look_at_lh(eye, target, up):
 def perspective_lh(width, height, z_near, z_far):
     matrix = Matrix()
     matrix.m[0] = (2.0 * z_near) / width
-    matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0
     matrix.m[5] = (2.0 * z_near) / height
-    matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0
     matrix.m[10] = -z_far / (z_near - z_far)
-    matrix.m[8] = matrix.m[9] = 0.0
     matrix.m[11] = 1.0
-    matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0
     matrix.m[14] = (z_near * z_far) / (z_near - z_far)
     return matrix
 
@@ -92,13 +88,9 @@ def perspective_fov_lh(fov, aspect, z_near, z_far):
     result = Matrix()
     tan = 1.0 / (math.tan(fov * 0.5))
     result.m[0] = tan / aspect
-    result.m[1] = result.m[2] = result.m[3] = 0.0
     result.m[5] = tan
-    result.m[4] = result.m[6] = result.m[7] = 0.0
-    result.m[8] = result.m[9] = 0.0
     result.m[10] = -z_far / (z_near - z_far)
     result.m[11] = 1.0
-    result.m[12] = result.m[13] = result.m[15] = 0.0
     result.m[14] = (z_near * z_far) / (z_near - z_far)
     return result
 
@@ -109,7 +101,16 @@ def zero():
     return Matrix()
 
 class Matrix(object):
+    '''
+    Matrix class for a 4 x 4 matrix.
 
+    Note that the matrix is in column major notation
+
+    [ 0  4  8 12]
+    [ 1  5  9 13]
+    [ 2  6 10 14]
+    [ 3  7 11 15]
+    '''
     def __init__(self, identity=False):
         self.m = [0.0] * 16
 
@@ -121,10 +122,10 @@ class Matrix(object):
 
     def __str__(self):
         return """
-        {0[0]} {0[1]} {0[2]} {0[3]}
-        {0[4]} {0[5]} {0[6]} {0[7]}
-        {0[8]} {0[9]} {0[10]} {0[11]}
-        {0[12]} {0[13]} {0[14]} {0[15]}
+        {0[0]} {0[4]} {0[8]} {0[12]}
+        {0[1]} {0[5]} {0[9]} {0[13]}
+        {0[2]} {0[6]} {0[10]} {0[14]}
+        {0[3]} {0[7]} {0[11]} {0[15]}
         """.format(self.m)
 
     def is_identity(self):

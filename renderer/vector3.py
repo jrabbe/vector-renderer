@@ -25,15 +25,15 @@ def distance(a, b):
     return len(a - b)
 
 def zero():
-    return Vector3()
+    return Vector()
 
 def up():
-    return Vector3(y=1.0)
+    return Vector(y=1.0)
 
 def swap(a, b):
     return (b, a)
 
-class Vector3(object):
+class Vector(object):
 
     def __init__(self, x=0.0, y=0.0, z=0.0):
         self.x = x
@@ -44,25 +44,25 @@ class Vector3(object):
         return '{X=' + str(self.x) + ' Y=' + str(self.y) + ' Z=' + str(self.z) + '}'
 
     def __add__(self, other):
-        return Vector3(self.x + other.x, self.y + other.y, self.z + other.z)
+        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
-        return Vector3(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __neg__(self):
-        return Vector3(-self.x, -self.y, -self.z)
+        return Vector(-self.x, -self.y, -self.z)
 
     def scale(self, factor):
-        return Vector3(self.x * factor, self.y * factor, self.z * factor)
+        return Vector(self.x * factor, self.y * factor, self.z * factor)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
 
     def __mul__(self, other):
-        return Vector3(self.x * other.x, self.y * other.y, self.z * other.z)
+        return Vector(self.x * other.x, self.y * other.y, self.z * other.z)
 
     def __div__(self, other):
-        return Vector3(self.x / other.x, self.y / other.y, self.z / other.z)
+        return Vector(self.x / other.x, self.y / other.y, self.z / other.z)
 
     def __truediv__(self, other):
         return self.__div__(other)
@@ -87,10 +87,10 @@ class Vector3(object):
         return self
 
     def clone(self):
-        return Vector3(self.x, self.y, self.z)
+        return Vector(self.x, self.y, self.z)
 
     def cross(self, other):
-        result = Vector3()
+        result = Vector()
         result.x = self.y * other.z - self.z * other.y
         result.y = self.z * other.x - self.x * other.z
         result.z = self.x * other.y - self.y * other.x
@@ -104,6 +104,6 @@ class Vector3(object):
         y = (self.x * transformation.m[1]) + (self.y * transformation.m[5]) + (self.z * transformation.m[9]) + transformation.m[13]
         z = (self.x * transformation.m[2]) + (self.y * transformation.m[6]) + (self.z * transformation.m[10]) + transformation.m[14]
         w = (self.x * transformation.m[3]) + (self.y * transformation.m[7]) + (self.z * transformation.m[11]) + transformation.m[15]
-        return Vector3(x / w, y / w, z / w)
+        return Vector(x / w, y / w, z / w)
 
 
