@@ -49,7 +49,7 @@ class Mesh(object):
 
             self.faces.append(Face(a, b, c))
 
-        print 'Created mesh ', name, ' with ', len(self.faces), ' faces'
+        # print 'Created mesh ', name, ' with ', len(self.faces), ' faces'
 
         self.vertices = vertices
         self.textures_enabled = textures_enabled
@@ -59,24 +59,7 @@ class Mesh(object):
 
     def merge(self, other):
         highest_index = len(self.vertices)
-        print 'highest old index = ', highest_index
 
         other_faces = map(lambda f: Face(f.a + highest_index, f.b + highest_index, f.c + highest_index),other.faces)
         self.faces += other_faces
         self.vertices += other.vertices[:]
-
-    def face_normal(self, face):
-        """
-        Calculate the face normal for the provided face. The normal is calculated as the average
-        of the three vertex normals for the face
-
-        face -- the face to calculate the normal for.
-        """
-        if face not in self.faces:
-            return None
-
-        normal_a = self.vertices[face.a].coordinates + self.vertices[face.a].normal
-        normal_b = self.vertices[face.b].coordinates + self.vertices[face.b].normal
-        normal_c = self.vertices[face.c].coordinates + self.vertices[face.c].normal
-
-        return (normal_a + normal_b + normal_c).scale(1/3).normalize()

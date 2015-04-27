@@ -21,12 +21,21 @@ def find_transformation(v1, v2):
     to the triangle specified by the three points in v2. For triangles in 2D this will
     be an affine transformation with homogenous coordinates.
     """
-    A = from_values([v1[0].x, v1[1].x, v1[2].x, v1[0].y, v1[1].y, v1[2].y, 1, 1, 1])
-    B = from_values([v2[0].x, v2[1].x, v2[2].x, v2[0].y, v2[1].y, v2[2].y, 1, 1, 1])
+    A = from_values([v1[0].x, v1[0].y, 1, v1[1].x, v1[1].y, 1, v1[2].x, v1[2].y, 1])
+    B = from_values([v2[0].x, v2[0].y, 1, v2[1].x, v2[1].y, 1, v2[2].x, v2[2].y, 1])
 
-    return B * ~A
+    return ~A * B
 
 class Matrix(object):
+    '''
+    Matrix class for a 3 x 3 matrix.
+
+    Note that the matrix is in column major notation
+
+    [0 3 6]
+    [1 4 7]
+    [2 5 8]
+    '''
 
     def __init__(self, identity=False):
         self.m = [0.0] * 9
@@ -38,9 +47,9 @@ class Matrix(object):
 
     def __str__(self):
         return """
-        {0[0]} {0[1]} {0[2]}
-        {0[3]} {0[4]} {0[5]}
-        {0[6]} {0[7]} {0[8]}
+        {0[0]} {0[3]} {0[6]}
+        {0[1]} {0[4]} {0[7]}
+        {0[2]} {0[5]} {0[8]}
         """.format(self.m)
 
     def is_identity(self):
@@ -53,26 +62,27 @@ class Matrix(object):
         return True
 
     def determinant(self):
-        temp1 = (self.m[10] * self.m[15]) - (self.m[11] * self.m[14])
-        temp2 = (self.m[9] * self.m[15]) - (self.m[11] * self.m[13])
-        temp3 = (self.m[9] * self.m[14]) - (self.m[10] * self.m[13])
-        temp4 = (self.m[8] * self.m[15]) - (self.m[11] * self.m[12])
-        temp5 = (self.m[8] * self.m[14]) - (self.m[10] * self.m[12])
-        temp6 = (self.m[8] * self.m[13]) - (self.m[9] * self.m[12])
-        return ((((self.m[0] * (((self.m[5] * temp1) - (self.m[6] * temp2)) + (self.m[7] * temp3))) - (self.m[1] * (((self.m[4] * temp1) - (self.m[6] * temp4)) + (self.m[7] * temp5)))) + (self.m[2] * (((self.m[4] * temp2) - (self.m[5] * temp4)) + (self.m[7] * temp6)))) - (self.m[3] * (((self.m[4] * temp3) - (self.m[5] * temp5)) + (self.m[6] * temp6))))
+        a = self.m[0] * self.m[4] * self.m[8]
+        b = self.m[3] * self.m[7] * self.m[2]
+        c = self.m[6] * self.m[1] * self.m[5]
+        d = self.m[6] * self.m[4] * self.m[2]
+        f = self.m[3] * self.m[1] * self.m[8]
+        g = self.m[0] * self.m[7] * self.m[5]
+
+        return (a + b + c) - (d + f + g)
 
     def as_array(self):
         return self.m
 
     def __invert__(self):
         a = self.m[0]
-        b = self.m[1]
-        c = self.m[2]
-        d = self.m[3]
+        b = self.m[3]
+        c = self.m[6]
+        d = self.m[1]
         e = self.m[4]
-        f = self.m[5]
-        g = self.m[6]
-        h = self.m[7]
+        f = self.m[7]
+        g = self.m[2]
+        h = self.m[5]
         i = self.m[8]
         A =   e * i - f * h
         B = -(d * i - f * g)
@@ -87,13 +97,13 @@ class Matrix(object):
         det = a * A + b * B + c*C
 
         self.m[0] = A / det
-        self.m[1] = D / det
-        self.m[2] = G / det
-        self.m[3] = B / det
+        self.m[1] = B / det
+        self.m[2] = C / det
+        self.m[3] = D / det
         self.m[4] = E / det
-        self.m[5] = H / det
-        self.m[6] = C / det
-        self.m[7] = F / det
+        self.m[5] = F / det
+        self.m[6] = G / det
+        self.m[7] = H / det
         self.m[8] = I / det
 
         return self

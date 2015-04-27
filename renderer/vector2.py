@@ -31,9 +31,9 @@ def to_vector(vector):
     Creates a Vector2 from the provided vector. This is done by taking the x and y coordinates
     of the provided vector.
     """
-    return Vector2(vector.x, vector.y)
+    return Vector(vector.x, vector.y)
 
-class Vector2(object):
+class Vector(object):
 
     def __init__(self, x=0.0, y=0.0):
         self.x = x
@@ -43,16 +43,16 @@ class Vector2(object):
         return '{X=' + str(self.x) + ' Y=' + str(self.y) + '}'
 
     def __add__(self, other):
-        return Vector2(self.x + other.x, self.y + other.y)
+        return Vector(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
-        return Vector2(self.x - other.x, self.y - other.y)
+        return Vector(self.x - other.x, self.y - other.y)
 
     def __neg__(self):
-        return Vector2(-self.x, -self.y)
+        return Vector(-self.x, -self.y)
 
     def scale(self, factor):
-        return Vector2(self.x * factor, self.y * factor)
+        return Vector(self.x * factor, self.y * factor)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -74,15 +74,15 @@ class Vector2(object):
         self.y *= num
 
     def clone(self):
-        return Vector2(self.x, self.y)
+        return Vector(self.x, self.y)
 
     def apply_affine(self, transformation):
         x = self.x * transformation.m[0] + self.y * transformation.m[1] + transformation.m[2]
         y = self.x * transformation.m[3] + self.y * transformation.m[4] + transformation.m[5]
-        return Vector2(x, y)
+        return Vector(x, y)
 
     def transform(self, transformation):
         x = (self.x * transformation.m[0]) + (self.y * transformation.m[3]) + transformation.m[6]
         y = (self.x * transformation.m[1]) + (self.y * transformation.m[4]) + transformation.m[7]
         w = (self.x * transformation.m[2]) + (self.y * transformation.m[5]) + transformation.m[8]
-        return Vector2(x / w, y / w)
+        return Vector(x / w, y / w)
