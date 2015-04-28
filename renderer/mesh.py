@@ -27,6 +27,34 @@ class Face(object):
     def __str__(self):
         return '{A=' + str(self.a) + ' B=' + str(self.b) + ' C=' + str(self.c) + '}'
 
+def cube():
+    vertices = [
+        vertex.Vertex(vector3.Vector(-1, -1, -1),vector3.Vector(-1, -1, -1)),
+        vertex.Vertex(vector3.Vector( 1, -1, -1),vector3.Vector( 1, -1, -1)),
+        vertex.Vertex(vector3.Vector(-1,  1, -1),vector3.Vector(-1,  1, -1)),
+        vertex.Vertex(vector3.Vector(-1, -1,  1),vector3.Vector(-1, -1,  1)),
+        vertex.Vertex(vector3.Vector( 1,  1, -1),vector3.Vector( 1,  1, -1)),
+        vertex.Vertex(vector3.Vector(-1,  1,  1),vector3.Vector(-1,  1,  1)),
+        vertex.Vertex(vector3.Vector( 1, -1,  1),vector3.Vector( 1, -1,  1)),
+        vertex.Vertex(vector3.Vector( 1,  1,  1),vector3.Vector( 1,  1,  1)),
+    ]
+
+    indices = [
+        0,1,2,
+        0,1,3,
+        0,2,3,
+        1,2,4,
+        1,3,6,
+        1,4,6,
+        2,3,5,
+        2,4,5,
+        3,5,6,
+        4,5,7,
+        4,6,7,
+        5,6,7
+    ]
+
+    return Mesh('cube', indices, vertices, False)
 
 class Mesh(object):
 
