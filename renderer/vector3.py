@@ -41,7 +41,7 @@ class Vector(object):
         self.z = z
 
     def __str__(self):
-        return '{X=' + str(self.x) + ' Y=' + str(self.y) + ' Z=' + str(self.z) + '}'
+        return '[X={self.x:.5f} Y={self.y:.5f} Z={self.z:.5f}]'.format(self=self)
 
     def __add__(self, other):
         return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
@@ -57,6 +57,10 @@ class Vector(object):
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __hash__(self):
+        # Note: this is not absolutely reliable for large (> 16-bit) values of x, y, or z
+        return hash(self.x) << 32 ^ hash(self.y) << 16 ^ hash(self.z)
 
     def __mul__(self, other):
         return Vector(self.x * other.x, self.y * other.y, self.z * other.z)

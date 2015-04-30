@@ -40,7 +40,7 @@ class Vector(object):
         self.y = y
 
     def __str__(self):
-        return '{X=' + str(self.x) + ' Y=' + str(self.y) + '}'
+        return '[X={self.x:.5f} Y={self.y:.5f}]'.format(self=self)
 
     def __add__(self, other):
         return Vector(self.x + other.x, self.y + other.y)
@@ -57,9 +57,11 @@ class Vector(object):
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
+    def __hash__(self):
+        return hash(self.x) << 32 ^ hash(self.y)
+
     def __len__(self):
         return math.sqrt(self.length_squared())
-
     def length_squared(self):
         return (self.x * self.x + self.y * self.y)
 
