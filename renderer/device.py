@@ -26,6 +26,46 @@ class Device(object):
         self.screen_height = screen_height
         self.name = name
 
+    def polygon(self, vertices, color, scene):
+        """
+        Get the polygon instance for the device
+        """
+        return p.Polygon(vertices, color, scene, self)
+
+    def render(self, camera, meshes):
+        """
+        Render the provided meshes with the specified camera.
+
+        camera -- the camera to use for rendering
+        meshes -- the meshes to render
+        """
+
+        scene = s.Scene(self.screen_width, self.screen_height, camera)
+        self.begin_render()
+
+        for mesh in meshes:
+            scene.set_mesh(mesh)
+            polygons = []
+
+            for face in mesh.faces:
+                vertex0 = mesh.vertices[face.a]
+                vertex1 = mesh.vertices[face.b]
+                vertex2 = mesh.vertices[face.c]
+
+                color = c4.Color(1.0, 0.0, 0.0, 1.0)
+
+                polygon = self.polygon([vertex0, vertex1, vertex2], color, scene)
+                polygons.append(polygon)
+
+            polygons.sort()
+
+            for polygon in polygons:
+                polygon.draw()
+
+        self.end_render()
+
+    # --------------------------------------------------------------------------
+
     def draw_line(self, point0, point1, color=None):
         """
         Draw a point at the provided point
@@ -54,44 +94,6 @@ class Device(object):
         drawn.
         """
         raise NotImplementedError
-
-    def polygon(self, vertex0, vertex1, vertex2, color, scene):
-        """
-        Get the polygon instance for the device
-        """
-        return p.Polygon(vertex0, vertex1, vertex2, color, scene, self)
-
-    def render(self, camera, meshes):
-        """
-        Render the provided meshes with the specified camera.
-
-        camera -- the camera to use for rendering
-        meshes -- the meshes to render
-        """
-
-        scene = s.Scene(self.screen_width, self.screen_height, camera)
-        self.begin_render()
-
-        for mesh in meshes:
-            scene.set_mesh(mesh)
-            polygons = []
-
-            for face in mesh.faces:
-                vertex0 = mesh.vertices[face.a]
-                vertex1 = mesh.vertices[face.b]
-                vertex2 = mesh.vertices[face.c]
-
-                color = c4.Color(1.0, 0.0, 0.0, 1.0)
-
-                polygon = self.polygon(vertex0, vertex1, vertex2, color, scene)
-                polygons.append(polygon)
-
-            polygons.sort()
-
-            for polygon in polygons:
-                polygon.draw()
-
-        self.end_render()
 
     def present(self):
         raise NotImplementedError

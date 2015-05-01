@@ -10,18 +10,18 @@ import matrix3 as m3
 
 class Polygon(object):
 
-    def __init__(self, vertex0, vertex1, vertex2, color, scene, device):
+    def __init__(self, vertices, color, scene, device):
 
         self.color = color
         self.scene = scene
         self.device = device
 
-        projection0 = self.scene.project(vertex0)
-        projection1 = self.scene.project(vertex1)
-        projection2 = self.scene.project(vertex2)
+        self.points = []
+        for vertex in vertices:
+            projection = self.scene.project(vertex);
+            self.points.append(projection)
 
-        self.vertices = [vertex0, vertex1, vertex2]
-        self.points = [projection0, projection1, projection2]
+        self.vertices = vertices
 
         self.average_z = reduce(lambda acc, pt: acc + pt.projected_z, self.points, 0) / 3
         self.average_y = reduce(lambda acc, pt: acc + pt.world_y, self.points, 0) / 3

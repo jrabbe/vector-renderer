@@ -16,4 +16,4 @@ class Vertex:
         self.texture = texture
 
     def __str__(self):
-        return '[coordinates={} normal={} texture={}]'.format(self.coordinates, self.normal, self.texture)
+        return '[coordinates={self.coordinates} normal={self.normal} texture={self.texture}]'.format(self=self)

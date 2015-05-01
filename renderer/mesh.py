@@ -4,28 +4,7 @@
 from __future__ import division
 
 import vector3
-
-class Face(object):
-    """
-    A face is a triangle in the 3D mesh based on three vertex indices forming the corners of the
-    polygon.
-    """
-
-    def __init__(self, a, b, c):
-        """
-        Initialize a new face from three vertex indices
-
-        Keyword arguments:
-        a -- the first vertex index
-        b -- the second vertex index
-        c -- the third vertex index
-        """
-        self.a = a
-        self.b = b
-        self.c = c
-
-    def __str__(self):
-        return '{A=' + str(self.a) + ' B=' + str(self.b) + ' C=' + str(self.c) + '}'
+import face
 
 def cube():
     vertices = [
@@ -75,9 +54,7 @@ class Mesh(object):
             b = indices[i + 1]
             c = indices[i + 2]
 
-            self.faces.append(Face(a, b, c))
-
-        # print 'Created mesh ', name, ' with ', len(self.faces), ' faces'
+            self.faces.append(face.Face(a, b, c))
 
         self.vertices = vertices
         self.textures_enabled = textures_enabled
