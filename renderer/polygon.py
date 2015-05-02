@@ -4,9 +4,10 @@
 from __future__ import division
 import sys
 
-import vector2 as v2
+from math3d import vector2 as v2
+from math3d import matrix3 as m3
+
 import color4 as c4
-import matrix3 as m3
 
 class Polygon(object):
 

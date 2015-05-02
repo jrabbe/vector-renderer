@@ -5,6 +5,9 @@ from __future__ import division
 
 import math
 
+def create(x, y):
+    return Vector(x, y)
+
 def normalize(vector):
     """
     Returns a normalized copy of the provided vector.
@@ -26,7 +29,7 @@ def distance(a, b):
 def distance_squared(a, b):
     return (a - b).length_squared()
 
-def to_vector(vector):
+def to_vector2(vector):
     """
     Creates a Vector2 from the provided vector. This is done by taking the x and y coordinates
     of the provided vector.
@@ -75,15 +78,17 @@ class Vector(object):
         self.x *= num
         self.y *= num
 
+        return self
+
     def clone(self):
         return Vector(self.x, self.y)
 
-    def apply_affine(self, transformation):
-        x = self.x * transformation.m[0] + self.y * transformation.m[1] + transformation.m[2]
-        y = self.x * transformation.m[3] + self.y * transformation.m[4] + transformation.m[5]
-        return Vector(x, y)
-
     def transform(self, transformation):
+        """
+        Performs the transformation of the values for this vector with the
+        provided transformation matrix, returning a new vector with the
+        transformed values.
+        """
         x = (self.x * transformation.m[0]) + (self.y * transformation.m[3]) + transformation.m[6]
         y = (self.x * transformation.m[1]) + (self.y * transformation.m[4]) + transformation.m[7]
         w = (self.x * transformation.m[2]) + (self.y * transformation.m[5]) + transformation.m[8]

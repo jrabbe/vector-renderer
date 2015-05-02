@@ -4,9 +4,10 @@
 from __future__ import division
 import sys
 
-import matrix4 as m4
-import vector2 as v2
-import vector3 as v3
+from math3d import matrix4 as m4
+from math3d import vector2 as v2
+from math3d import vector3 as v3
+
 import projection as p
 
 class Scene(object):

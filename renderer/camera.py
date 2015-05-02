@@ -3,7 +3,7 @@
 
 from __future__ import division
 
-import vector3
+from math3d import vector3
 
 class Camera:
 

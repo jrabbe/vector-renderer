@@ -4,6 +4,7 @@
 from __future__ import division
 
 import plotdevice as pd
+
 import device as d
 
 class Device(d.Device):
