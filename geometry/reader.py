@@ -5,9 +5,10 @@ from __future__ import division
 
 import os
 
+from math3d import vector3 as v3
+from math3d import vector2 as v2
+
 import mesh as m
-import vector3 as v3
-import vector2 as v2
 import vertex as v
 import filebuffer as fb
 

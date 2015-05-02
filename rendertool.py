@@ -10,6 +10,8 @@ import argparse
 import sys
 
 from renderer import *
+from geometry import *
+from math3d import *
 
 def prepare_output(output):
     output = path.abspath(output)
@@ -49,7 +51,7 @@ if __name__ == '__main__':
     for part in args.part:
 
         print 'Reading geometry for ', part
-        g = geometryreader.GeometryReader(args.primitives)
+        g = reader.GeometryReader(args.primitives)
         m = g.read(part)
 
         filename = '/'.join([output, m.name])
