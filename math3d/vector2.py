@@ -24,7 +24,7 @@ def distance(a, b):
     """
     Finds the distance between the two vectors a and b.
     """
-    return len(a - b)
+    return (a - b).length()
 
 def distance_squared(a, b):
     return (a - b).length_squared()
@@ -64,7 +64,11 @@ class Vector(object):
         return hash(self.x) << 32 ^ hash(self.y)
 
     def __len__(self):
+        return self.length()
+
+    def length(self):
         return math.sqrt(self.length_squared())
+
     def length_squared(self):
         return (self.x * self.x + self.y * self.y)
 
