@@ -8,6 +8,7 @@ import sys
 
 import argparse
 import sys
+import time
 
 from renderer import *
 from geometry import *
@@ -51,6 +52,9 @@ if __name__ == '__main__':
     for part in args.part:
 
         print 'Reading geometry for ', part
+
+        start_time = time.clock()
+
         g = reader.GeometryReader(args.primitives)
         m = g.read(part)
 
@@ -89,3 +93,6 @@ if __name__ == '__main__':
             dev.render(cam, [m])
 
         dev.present()
+
+        end_time = time.clock()
+        print 'Finished rendering part {} in {} seconds'.format(part, end_time - start_time)
