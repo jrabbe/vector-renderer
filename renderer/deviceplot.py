@@ -33,6 +33,14 @@ class Device(d.Device):
     def __pd_color(self, color):
         return pd.color(color.r, color.g, color.b, color.a)
 
+    def draw_line(self, point0, point1, color=None):
+        pd.pen(0.1)
+        if color is not None:
+            c = self.__pd_color(color)
+            pd.stroke(c)
+
+        pd.line(point0.x, point0.y, point1.x, point1.y)
+
     def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
         pd.pen(0.1, join=pd.BEVEL)
         pd.stroke(0)
@@ -46,10 +54,9 @@ class Device(d.Device):
         points = map(lambda p: (p.x, p.y), base_points)
         pd.bezier(points, close=True)
 
-    def draw_line(self, point0, point1, color=None):
-        pd.pen(0.1)
-        if color is not None:
-            c = self.__pd_color(color)
-            pd.stroke(c)
+    def draw_polygon(self, points, base_color=None):
+        """
+        Draw a polygon with the provided points
 
-        pd.line(point0.x, point0.y, point1.x, point1.y)
+        """
+        raise NotImplementedError

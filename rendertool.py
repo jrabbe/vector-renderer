@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
             print 'Rendering mesh'
 
-            dev.render(cam, [m])
+            dev.render_primitive(cam, m.primitive)
 
         dev.present()
 

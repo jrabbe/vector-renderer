@@ -28,6 +28,26 @@ class Device(d.Device):
 
         return svg_color
 
+    def draw_polygon(self, points, base_color=None):
+        """
+        Draw a polygon with the provided points
+
+        """
+        points = map(lambda p: '{},{}'.format(p.x, p.y), points)
+        color = self.to_svg_color(base_color)
+        strokecolor = self.to_svg_color(base_color.scaled(0.1))
+
+        attributes = {
+            'points': ' '.join(points),
+            'fill': color,
+            'stroke': strokecolor,
+            'stroke-width': '1'
+        }
+
+        polygon = ET.Element('polygon', attrib=attributes)
+        self.output_buffer.get('polygons').append(polygon)
+
+
     def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
 
         points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)
@@ -85,7 +105,6 @@ class Device(d.Device):
 
     def present(self):
         viewBox = '0 0 {} {}'.format(self.screen_width, self.screen_height)
-        # TODO: add default namespace for svg element: http://www.w3.org/2000/svg
         svg = ET.Element('{http://www.w3.org/2000/svg}svg', attrib={'viewBox': viewBox})
         svg.append(self.output_buffer.get('defs'))
         svg.append(self.output_buffer.get('polygons'))
