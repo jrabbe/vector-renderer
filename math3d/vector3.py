@@ -28,7 +28,7 @@ def distance(a, b):
     """
     Calculates the disctance between the two provided vectors
     """
-    return len(a - b)
+    return math.sqrt(distance_squared(a - b))
 
 def zero():
     """
@@ -81,6 +81,9 @@ class Vector(object):
         return self.__div__(other)
 
     def __len__(self):
+        return self.length()
+
+    def length(self):
         return math.sqrt(self.length_squared())
 
     def length_squared(self):
