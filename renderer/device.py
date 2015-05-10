@@ -39,7 +39,7 @@ class Device(object):
         camera -- the camera to use for rendering
         meshes -- the meshes to render
         """
-
+        color = c4.Color(1.0, 0.0, 0.0, 1.0)
         scene = s.Scene(self.screen_width, self.screen_height, camera)
         self.begin_render()
 
@@ -47,14 +47,9 @@ class Device(object):
             scene.set_mesh(mesh)
             polygons = []
 
-            for face in mesh.faces:
-                vertex0 = mesh.vertices[face.a]
-                vertex1 = mesh.vertices[face.b]
-                vertex2 = mesh.vertices[face.c]
+            for triangle in mesh.triangles:
 
-                color = c4.Color(1.0, 0.0, 0.0, 1.0)
-
-                polygon = self.polygon([vertex0, vertex1, vertex2], color, scene)
+                polygon = self.polygon([triangle.va, triangle.vb, triangle.vc], color, scene)
                 polygons.append(polygon)
 
             polygons.sort()

@@ -22,19 +22,24 @@ class GeometryReader:
         self.primitive_path = primitive_path
 
     def read(self, part):
+        print 'Reading geometry for {}'.format(part)
+
         self.__buffer = bytearray()
         filepath = os.path.join(self.primitive_path, part + '.g')
 
-        # print 'reading base geometry from ', filepath
+        print '- reading base geometry from ', filepath
 
         mesh = self.read_single_geometry(filepath, part)
 
         sub_part_index = 1
         while os.path.exists(filepath + str(sub_part_index)):
-            # print 'reading sub part from with index ', sub_part_index
+            print '- reading sub part from with index ', sub_part_index
+
             sub_mesh = self.read_single_geometry(filepath + str(sub_part_index), part)
             mesh.merge(sub_mesh)
             sub_part_index += 1
+
+        mesh.finish()
 
         return mesh
 
