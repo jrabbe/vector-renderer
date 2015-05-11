@@ -35,7 +35,7 @@ class Scene(object):
         self.world_view = self.world * self.view
         self.transformation = self.world_view * self.projection
 
-    def __constrain(self, point):
+    def __constrain(self, point, z=None):
         """
         Constrains the provided point to the width and height set for the scene.
         This is done by scaling the x and y positions of the point.
@@ -43,7 +43,10 @@ class Scene(object):
         x = int(point.x * self.width + self.width / 2.0)
         y = int(-point.y * self.height + self.height / 2.0)
 
-        return v2.Vector(x, y)
+        if z is None:
+            return v2.Vector(x, y)
+        else:
+            return v3.Vector(x, y, z)
 
     def __compute_brightness(self, coords, normal, light):
         """
@@ -81,3 +84,7 @@ class Scene(object):
         proj = p.Projection(self.camera, self.__constrain(point), world_coords.z, self.__constrain(normal), brightness, is_facing_camera)
         proj.world_y = world_coords.y
         return proj
+
+    def simple_project(self, vertex):
+        point = vertex.coordinates.transform(self.transformation)
+        return self.__constrain(point, point.z)

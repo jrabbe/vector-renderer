@@ -5,31 +5,35 @@ from __future__ import division
 import sys
 
 from PIL import Image, ImageDraw
+from math3d import vector3
+from color4 import Color
+from scene import Scene
 
 import device as d
-import vector3
 
 class Device(d.Device):
 
     def __init__(self, screen_width, screen_height, name):
         d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
 
-        self.image = Image.new('RGBA', (screen_width, screen_height))
         self.depthbuffer = [None] * (screen_width * screen_height)
         self.backbuffer = [None] * (screen_width * screen_height)
 
     def begin_render(self):
-        self.draw = ImageDraw.Draw(self.image)
+        pass
 
     def end_render(self):
+        self.image = Image.new('RGBA', (self.screen_width, self.screen_height))
+        draw = ImageDraw.Draw(self.image)
+
         for y in xrange(self.screen_height):
             for x in xrange(self.screen_width):
                 index = x + y * self.screen_width
                 if self.backbuffer[index] is not None:
                     xy = [(x, y)]
-                    self.draw.point(xy, self.backbuffer[index])
+                    draw.point(xy, self.backbuffer[index])
 
-        del self.draw
+        del draw
 
     def present(self):
         with open(self.name + '.png', 'w') as f:
@@ -37,7 +41,7 @@ class Device(d.Device):
 
     def __pil_color(self, color=None):
         if color is None:
-            return (255, 0, 0, 255)
+            return (0, 0, 0, 255)
 
         r = int(round(255 * color.r))
         g = int(round(255 * color.g))
@@ -46,26 +50,39 @@ class Device(d.Device):
 
         return (r, g, b, a)
 
-    def draw_triangle(self, base_points, z_values, transformation, start_brightness, end_brightness, base_color=None):
-        mid_brightness = start_brightness * ((base_points[1].x - base_points[0].x) / (base_points[2].x - base_points[0].x))
-        base_points = map(lambda p: p.transform(transformation), base_points)
+    def render(self, camera, meshes):
+        """
+        Render the provided meshes with the specified camera.
 
-        p0, p1, p2 = map(lambda tp: vector3.Vector(tp[0].x, tp[0].y, tp[1]), zip(base_points, z_values))
-        nl0 = start_brightness
-        nl1 = mid_brightness
-        nl2 = end_brightness
+        camera -- the camera to use for rendering
+        meshes -- the meshes to render
+        """
+        color = Color(1.0, 0.0, 0.0, 1.0)
+        scene = Scene(self.screen_width, self.screen_height, camera)
+        self.begin_render()
+
+        for mesh in meshes:
+            scene.set_mesh(mesh)
+            polygons = []
+
+            for triangle in mesh.triangles:
+                points = map(lambda v: scene.simple_project(v), triangle.vertices())
+                self.draw_simple_triangle(points, color)
+
+        self.end_render()
+
+    def draw_simple_triangle(self, points, base_color=None):
+
+        p0, p1, p2 = points
 
         if p0.y > p1.y:
             p1, p0 = p0, p1
-            nl1, nl0 = nl0, nl1
 
         if p1.y > p2.y:
             p2, p1 = p1, p2
-            nl2, nl1 = nl1, nl2
 
         if p0.y > p1.y:
             p1, p0 = p0, p1
-            nl1, nl0 = nl0, nl1
 
         dP0P1 = 0
         if p1.y - p0.y > 0:
@@ -83,34 +100,14 @@ class Device(d.Device):
         if dP0P1 > dP0P2:
             for y in xrange(y0, y2):
                 if y < p1.y:
-                    data['ndotla'] = nl0;
-                    data['ndotlb'] = nl2;
-                    data['ndotlc'] = nl0;
-                    data['ndotld'] = nl1;
-
                     self.process_scanline(y, p0, p2, p0, p1, base_color, data)
                 else:
-                    data['ndotla'] = nl0;
-                    data['ndotlb'] = nl2;
-                    data['ndotlc'] = nl1;
-                    data['ndotld'] = nl2;
-
                     self.process_scanline(y, p0, p2, p1, p2, base_color, data)
         else:
             for y in xrange(y0, y2):
                 if y < p1.y:
-                    data['ndotla'] = nl0;
-                    data['ndotlb'] = nl1;
-                    data['ndotlc'] = nl0;
-                    data['ndotld'] = nl2;
-
                     self.process_scanline(y, p0, p1, p0, p2, base_color, data)
                 else:
-                    data['ndotla'] = nl1;
-                    data['ndotlb'] = nl2;
-                    data['ndotlc'] = nl0;
-                    data['ndotld'] = nl2;
-
                     self.process_scanline(y, p1, p2, p0, p2, base_color, data)
 
 
@@ -142,15 +139,13 @@ class Device(d.Device):
     def draw_point(self, x, y, z, color=None):
         index = x + y * self.screen_width
 
-        if self.depthbuffer[index] is not None and self.depthbuffer[index] > z:
+        if self.depthbuffer[index] is not None and self.depthbuffer[index] < z:
             return
 
         self.depthbuffer[index] = z
 
         pc = self.__pil_color(color)
         self.backbuffer[index] = pc
-        # xy = [(x, y)]
-        # self.draw.point(xy, pc)
 
     def clamp(self, value, minimum=0.0, maximum=1.0):
         return max(minimum, min(value, maximum))
@@ -168,15 +163,14 @@ class Device(d.Device):
         z1 = self.interpolate(pa.z, pb.z, gradient1)
         z2 = self.interpolate(pc.z, pb.z, gradient2)
 
-        snl = self.interpolate(data['ndotla'], data['ndotlb'], gradient1)
-        enl = self.interpolate(data['ndotlc'], data['ndotld'], gradient2)
-
         for x in xrange(sx, ex):
             gradient = (x - sx) / (ex - sx)
             z = self.interpolate(z1, z2, gradient)
-            ndotl = self.interpolate(snl, enl, gradient)
+            current_color = color
+            if x == sx or x + 1 == ex:
+                current_color = None
 
-            self.draw_point(x, y, z, color.clone().scale(ndotl))
+            self.draw_point(x, y, z, current_color)
 
 
 
