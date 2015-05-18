@@ -50,6 +50,12 @@ class Triangle(object):
     def vertices(self):
         return [self.va, self.vb, self.vc]
 
+    def center(self):
+        return self.va.coordinates.scale(1/3) + self.vb.coordinates.scale(1/3) + self.vc.coordinates.scale(1/3)
+
+    def normal(self):
+        return (self.va.normal + self.vb.normal + self.vc.normal).scale(1/3).normalize()
+
     def neighbors(self):
         return [x for x in [self.ab, self.bc, self.ca] if x is not None]
 
@@ -103,5 +109,6 @@ class Triangle(object):
         s = self.sine_of_angle(other)
 
         # Note: can be tuned to the exact angle that should mark the difference between two polygons.
+        # A value of 0.2 seems to be the most effective.
         return s < 0.2
-
+        # return False

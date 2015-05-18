@@ -90,3 +90,10 @@ class Scene(object):
     def simple_project(self, vertex):
         point = vertex.coordinates.transform(self.transformation)
         return self.__constrain(point, point.z)
+
+    def is_backface(self, coordinates, normal):
+        world_coords = coordinates.transform(self.world)
+        world_normal = normal.transform(self.world)
+
+        direction = world_coords - self.camera.position
+        return v3.dot(v3.normalize(world_normal), v3.normalize(direction)) > 0

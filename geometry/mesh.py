@@ -82,7 +82,7 @@ class Mesh(object):
         self.vertices += other.vertices[:]
 
     def finish(self):
-        print '- Created mesh with {} vertices and {} triangle triangles'.format(len(self.vertices), len(self.triangles))
+        print '- Created mesh with {} vertices and {} triangles'.format(len(self.vertices), len(self.triangles))
 
         print 'Finishing up mesh:'
         self.__assign_vertices()
@@ -90,7 +90,7 @@ class Mesh(object):
         self.__combine()
 
     def __assign_vertices(self):
-        print '- Setting vertices for triangles'
+        print '- Setting vertex data for triangles'
 
         for triangle in self.triangles:
             va = self.vertices[triangle.a]
@@ -143,6 +143,7 @@ class Mesh(object):
 
                 strips.append(current)
 
+        print '- Combined into {} strips'.format(len(strips))
         self.primitive = primitive.from_triangle_strips(strips)
         self.primitive.rotation = self.rotation
         self.primitive.position = self.position
