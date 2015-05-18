@@ -59,4 +59,12 @@ class Device(d.Device):
         Draw a polygon with the provided points
 
         """
-        raise NotImplementedError
+        pd.pen(1, join=pd.BEVEL)
+        pd.stroke(0)
+
+        if base_color is not None:
+            c = self.__pd_color(base_color)
+            pd.fill(c)
+
+        points = map(lambda p: (p.x, p.y), points)
+        pd.bezier(points, close=True)
