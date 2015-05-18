@@ -9,8 +9,8 @@ import device as d
 
 class Device(d.Device):
 
-    def __init__(self, screen_width, screen_height, name, options={}):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
+    def __init__(self, screen_width, screen_height, name, debug, options={}):
+        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name, debug=debug)
 
         fps = options.get('fps', 30)
         self.animated = options.get('animated', True)

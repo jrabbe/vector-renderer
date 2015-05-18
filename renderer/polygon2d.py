@@ -6,7 +6,7 @@ from __future__ import division
 from math3d import vector2
 
 from segment import Segment
-from zmap import ZMap
+import zmap
 
 def empty():
     return Polygon2D([])
@@ -18,31 +18,44 @@ class Polygon2D(object):
 
     def __init__(self, vertices=None):
         self.segments = []
+
         self.x = None
         self.y = None
         self.width = None
-        self.heigth = None
+        self.height = None
+
         self.zmap = None
+        self.minz = None
+        self.maxz = None
 
         if vertices is not None:
             for i in xrange(len(vertices)):
                 self.segments.append(Segment(vertices[i], vertices[(i + 1) % len(vertices)]))
 
-            self.x = min(map(lambda p: p.x, vertices))
-            self.width = max(map(lambda p: p.x, vertices)) - self.x + 1
-            self.y = min(map(lambda p: p.y, vertices))
-            self.height = max(map(lambda p: p.y, vertices)) - self.y + 1
+            self.__find_size(vertices)
+            self.zmap = zmap.from_triangle(vertices)
 
-    def __find_size(self):
-        vertices = reduce(lambda acc, s: acc + s.vertices(), self.segments, [])
+    def __find_size(self, vertices=None):
+        if vertices is None:
+            vertices = reduce(lambda acc, s: acc + s.vertices(), self.segments, [])
 
         self.x = min(map(lambda p: p.x, vertices))
         self.width = max(map(lambda p: p.x, vertices)) - self.x + 1
         self.y = min(map(lambda p: p.y, vertices))
         self.height = max(map(lambda p: p.y, vertices)) - self.y + 1
 
-    def __cmp__(self, other):
-        return self.zmap.overlap(other.zmap)
+        self.minz = min(map(lambda p: p.z, vertices))
+        self.maxz = max(map(lambda p: p.z, vertices))
+
+    def __eq__(self, other):
+        if len(self.segments) != len(other.segments):
+            return False
+
+        for s in self.segments:
+            if s not in other.segments:
+                return False
+
+        return True
 
     def __str__(self):
         return 'Polygon2D[x={} y={} width={} height={}]'.format(self.x, self.y, self.width, self.height)
@@ -73,6 +86,11 @@ class Polygon2D(object):
             else:
                 self.segments.append(segment)
 
+        if self.zmap is None:
+            self.zmap = other.zmap.clone()
+        elif other.zmap is not None:
+            self.zmap = self.zmap + other.zmap
+
         self.__find_size()
 
         return self
@@ -81,9 +99,11 @@ class Polygon2D(object):
         for segment in self.segments:
             yield segment
 
-    def generate_zmap(self):
-        self.zmap = ZMap(self)
-        # print self.zmap
+    def empty(self):
+        return len(self.segments) == 0
+
+    def __len__(self):
+        return len(self.segments) + 1
 
     def center(self):
         return vector2.Vector(self.x + self.width / 2, self.y + self.height / 2)

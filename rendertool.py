@@ -38,6 +38,7 @@ if __name__ == '__main__':
         help='The output device to use (default: %(default)s)')
     parser.add_argument('-o', '--output', type=str, default='',
         help='The output directory to use for outputting the rendered file. Will be created if it does not exist (default: the current directory)')
+    parser.add_argument('--debug', action='store_true', help='Whether to output debug information or not (default: %(default)s)')
 
     args = parser.parse_args()
     output = prepare_output(args.output)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
         if args.device == 'gif':
             frames = 600
             fps = args.fps
-            dev = deviceplot.Device(320, 200, filename, {fps: fps})
+            dev = deviceplot.Device(320, 200, filename, args.debug, {fps: fps})
             print 'Rendering {} frames at {} fps ['.format(frames, fps),
 
             for i in xrange(frames):
@@ -81,9 +82,9 @@ if __name__ == '__main__':
             height = 1000
 
             if args.device == 'svg':
-                dev = devicesvg.Device(width, height, filename)
+                dev = devicesvg.Device(width, height, filename, args.debug)
             elif args.device == 'png':
-                dev = deviceplot.Device(width, height, filename, {'animated': False})
+                dev = deviceplot.Device(width, height, filename, args.debug, {'animated': False})
             else:
                 sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
                 sys.exit(1)

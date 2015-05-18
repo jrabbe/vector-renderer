@@ -8,8 +8,8 @@ import device as d
 
 class Device(d.Device):
 
-    def __init__(self, screen_width, screen_height, name):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
+    def __init__(self, screen_width, screen_height, name, debug):
+        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name, debug=debug)
         ET.register_namespace('', 'http://www.w3.org/2000/svg')
         self.output_buffer = {
             'polygons': ET.Element('g'),

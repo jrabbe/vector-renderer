@@ -4,70 +4,36 @@
 from __future__ import division
 import sys
 
+from PIL import Image, ImageDraw
+
 from math3d import vector2
+from math3d import vector3
 
 # Local imports
 import color4 as c4
 import scene as s
 import polygon as p
 from polygon2d import Polygon2D
-from zmap import ZMap
-
-class Meta(object):
-
-    def __init__(self, miny, avgy, maxy, minz, avgz, maxz):
-        self.miny = miny
-        self.avgy = avgy
-        self.maxy = maxy
-
-        self.minz = minz
-        self.avgz = avgz
-        self.maxz = maxz
-
-    def __str__(self):
-        return '[Y={} < {} < {} Z={} < {} < {}]'.format(self.miny, self.avgy, self.maxy, self.minz, self.avgz, self.maxz)
-
-    def __cmp__(self, other):
-        # print 'comparing {} to {}'.format(self, other)
-
-        if self.maxz < other.minz:
-            # if other is completely in from of self, move self backward
-            return -1
-
-        if self.minz > other.maxz:
-            # if self is completely in front of other, move self forward
-            return 1
-
-        if self.minz >= other.minz and self.maxz <= other.maxz:
-            # if they are completely overlapping
-
-            if self.miny > other.maxy:
-                # if completely above, move forward
-                return 1
-            elif self.maxy < other.miny:
-                # if completely below move backwards
-                return -1
-
-        # TODO: next steps
-        # 1. Figure interpolated z values for larger surface to get which one is _actually_ in front
-        return cmp(self.avgz, other.avgz)
 
 class Device(object):
     """
     A render device which renders a 3D mesh to a file
     """
 
-    def __init__(self, screen_width, screen_height, name):
+    def __init__(self, screen_width, screen_height, name, debug):
         """
         Initialize the device with a size and filename
 
         screen_width -- the width of the screen
         screen_height -- the height of the screen
-        filename -- the name of the file to render
+        name -- the name of the file to render
         """
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.name = name
+        self.debug = debug
+
+        self.zbuffer = [None] * (self.screen_width * self.screen_height)
 
     def polygon(self, vertices, color, scene):
         """
@@ -85,27 +51,106 @@ class Device(object):
 
         color = c4.Color(1.0, 0.0, 0.0, 1.0)
 
-        polygons = []
         print '- Projecting triangle strips'
-        for triangle_strip in primitive.strips:
-            current = Polygon2D()
-            for triangle in triangle_strip:
+        self.polygons = []
+        ys = []
+        for strip in primitive.strips:
+            current = Polygon2D(None)
+            for triangle in strip:
+                # if scene.is_backface(triangle.center(), triangle.normal()):
+                #     continue
+
                 projected = map(lambda v: scene.simple_project(v), triangle.vertices())
                 current += Polygon2D(projected)
 
-            current.generate_zmap()
-            polygons.append(current)
-            # self.draw_polygon(current.vertices(), color)
+            # if current.empty():
+            #     continue
+
+            ys.append(current.y)
+            ys.append(current.y + current.height)
+            self.polygons.append(current)
+
+        miny = min(ys)
+        maxy = max(ys)
+        print '- Mesh y coordinate goes from {} to {}'.format(miny, maxy)
+
+        print '- Populating depth buffer'
+        mindepth, maxdepth, depth_buffer = self.generate_depth_buffer()
+        print '- Depth buffer goes from {}-{}'.format(mindepth, maxdepth)
+
+        if self.debug:
+            image = Image.new('RGBA', (self.screen_width, self.screen_height))
+            draw = ImageDraw.Draw(image)
+            for y in xrange(self.screen_height):
+                for x in xrange(self.screen_width):
+                    i = x + y * self.screen_width
+                    xy = [(x, y)]
+
+                    # Set "color"
+                    c = 0
+                    if depth_buffer[i] is not None:
+                        c = int(round(255 * ((maxdepth - depth_buffer[i]) / (maxdepth - mindepth))))
+                    pc = (c, c, c, 255)
+
+                    draw.point(xy, pc)
+            del draw
+            depth_filename = self.name + '-depth.png'
+            with open(depth_filename, 'w') as f:
+                image.save(f, 'PNG')
+
+        print '- Culling obscured polygons starting with {}'.format(len(self.polygons))
+        obscured = []
+        for p in self.polygons:
+            if self.is_completely_obscured(p, depth_buffer):
+                obscured.append(p)
+
+        self.polygons = filter(lambda p: p not in obscured, self.polygons)
+
+        print '- After culling have {} polygons'.format(len(self.polygons))
 
         print '- Sorting polygons'
-        polygons.sort()
+        self.polygons.sort(key=lambda p: p.zmap.comparison_values(lambda z: (maxdepth - z) / (maxdepth - mindepth), lambda y: 1 - (maxy - y) / (maxy - miny)))
 
         print '- Drawing to file'
-        for p in polygons:
+        for p in self.polygons:
             self.draw_polygon(p.vertices(), color)
 
         print '- Finishing render'
         self.end_render()
+
+    def generate_depth_buffer(self):
+        depth_buffer = [None] * (self.screen_width * self.screen_height)
+        mins = []
+        maxs = []
+        for p in self.polygons:
+            if p.minz is not None:
+                mins.append(p.minz)
+            if p.maxz is not None:
+                maxs.append(p.maxz)
+
+            pmap = p.zmap
+            for y in xrange(pmap.height):
+                for x in xrange(pmap.width):
+                    i = (x + pmap.x) + (y + pmap.y) * self.screen_width
+                    z = pmap.get(x, y)
+                    if z is not None and (depth_buffer[i] is None or z < depth_buffer[i]):
+                        depth_buffer[i] = z
+
+            # can be parallelized as long as the set if larger/smaller is atomic
+        return (min(mins), max(maxs), depth_buffer)
+
+    def is_completely_obscured(self, polygon, depth_buffer):
+        area = polygon.zmap.area()
+        covered = 0
+        for y in xrange(polygon.height):
+            for x in xrange(polygon.width):
+                gx = x + polygon.x
+                gy = y + polygon.y
+                z = polygon.zmap.get(x, y)
+                if z is not None and z > depth_buffer[gx + gy * self.screen_width]:
+                    covered += 1
+
+        return area == covered
 
     def render(self, camera, meshes):
         """
