@@ -70,8 +70,8 @@ class Scene(object):
         point = vertex.coordinates.transform(self.transformation)
         normal = (vertex.normal + vertex.coordinates).transform(self.transformation)
 
-        world_coords = vertex.coordinates.transform(self.world)
-        world_normal = vertex.normal.transform(self.world)
+        world_coords = self.to_world(vertex.coordinates)
+        world_normal = self.to_world(vertex.normal)
 
         view_coords = vertex.coordinates.transform(self.world_view)
 
@@ -91,9 +91,23 @@ class Scene(object):
         point = vertex.coordinates.transform(self.transformation)
         return self.__constrain(point, point.z)
 
+    def to_world(self, vector):
+        return vector.transform(self.world)
+
+    def brightness(self, coords, normal):
+        world_coords = self.to_world(coords)
+        world_normal = self.to_world(normal)
+
+        brightness = self.__compute_brightness(world_coords, world_normal, self.light)
+        if brightness > 1:
+            # It can never be brighter than brightest
+            brightness = 1
+
+        return brightness
+
     def is_backface(self, coordinates, normal):
-        world_coords = coordinates.transform(self.world)
-        world_normal = normal.transform(self.world)
+        world_coords = self.to_world(coordinates)
+        world_normal = self.to_world(normal)
 
         direction = world_coords - self.camera.position
         return v3.dot(v3.normalize(world_normal), v3.normalize(direction)) > 0
