@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
         g = reader.GeometryReader(args.primitives)
         m = g.read(part)
+        cam.target = m.center()
 
         filename = '/'.join([output, m.name])
 

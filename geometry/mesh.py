@@ -89,6 +89,9 @@ class Mesh(object):
         self.__find_neighbors()
         self.__combine()
 
+    def center(self):
+        return sum(map(lambda v: v.coordinates, self.vertices), vector3.zero()).scale(1 / len(self.vertices))
+
     def __assign_vertices(self):
         print '- Setting vertex data for triangles'
 
