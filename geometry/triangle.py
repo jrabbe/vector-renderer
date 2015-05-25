@@ -110,5 +110,5 @@ class Triangle(object):
 
         # Note: can be tuned to the exact angle that should mark the difference between two polygons.
         # A value of 0.2 seems to be the most effective.
-        return s < 0.2
-        # return False
+        # return s < 0.2
+        return False
