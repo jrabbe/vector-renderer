@@ -28,12 +28,14 @@ class Polygon2D(object):
         self.minz = None
         self.maxz = None
 
-        if vertices is not None:
+        if vertices is not None and len(vertices) > 0:
             for i in xrange(len(vertices)):
                 self.segments.append(Segment(vertices[i], vertices[(i + 1) % len(vertices)]))
 
             self.__find_size(vertices)
-            self.zmap = zmap.from_triangle(vertices)
+
+            if len(vertices) == 3:
+                self.zmap = zmap.from_triangle(vertices)
 
     def __find_size(self, vertices=None):
         if vertices is None:
