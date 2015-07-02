@@ -46,8 +46,8 @@ class Device(d.Device):
         pd.stroke(0)
 
         if base_color is not None:
-            cs = self.__pd_color(base_color.scaled(start_brightness))
-            ce = self.__pd_color(base_color.scaled(end_brightness))
+            cs = self.__pd_color(base_color.scale(start_brightness))
+            ce = self.__pd_color(base_color.scale(end_brightness))
             pd.fill(cs, ce)
 
         base_points = map(lambda p: p.transform(transformation), base_points)

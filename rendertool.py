@@ -50,6 +50,9 @@ if __name__ == '__main__':
     cam.position = vector3.Vector(0, 0, 10)
     cam.target = vector3.Vector(0, 0, 0)
 
+    times = []
+    overall_start = time.clock()
+
     for part in args.part:
 
         print 'Reading geometry for ', part
@@ -60,22 +63,20 @@ if __name__ == '__main__':
         m = g.read(part)
         cam.target = m.center()
 
+        print '-- Targeted camera at {}'.format(cam.target)
+
         filename = '/'.join([output, m.name])
 
         if args.device == 'gif':
             frames = 600
             fps = args.fps
             dev = deviceplot.Device(320, 200, filename, args.debug, {fps: fps})
-            print 'Rendering {} frames at {} fps ['.format(frames, fps),
+            print 'Rendering {} frames at {} fps'.format(frames, fps),
 
             for i in xrange(frames):
-                sys.stdout.flush()
-                sys.stdout.write('.')
                 m.rotation.x += 0.0104
                 m.rotation.y += 0.0104
                 dev.render(cam, [m])
-
-            print '] DONE'
         else:
             m.rotation.x = 0.3
             m.rotation.y = -0.4
@@ -92,9 +93,19 @@ if __name__ == '__main__':
 
             print 'Rendering mesh'
 
-            dev.render_primitive(cam, m.primitive)
+            times = dev.render_primitive(cam, m.primitive)
 
         dev.present()
 
         end_time = time.clock()
         print 'Finished rendering part {} in {} seconds'.format(part, end_time - start_time)
+        pt = start_time
+        for d, t in times:
+            print '-- {} : {} seconds'.format(d, t - pt)
+            pt = t
+
+        print '----------'
+
+    overall_end = time.clock()
+
+    print 'Finished rendering all parts in {} seconds'.format(overall_end - overall_start)

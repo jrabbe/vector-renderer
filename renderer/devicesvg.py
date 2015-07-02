@@ -35,7 +35,7 @@ class Device(d.Device):
         """
         points = map(lambda p: '{},{}'.format(p.x, p.y), points)
         color = self.to_svg_color(base_color)
-        strokecolor = self.to_svg_color(base_color.scaled(0.1))
+        strokecolor = self.to_svg_color(base_color.scale(0.1))
 
         attributes = {
             'points': ' '.join(points),
@@ -52,8 +52,8 @@ class Device(d.Device):
 
         points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)
 
-        start_color = self.to_svg_color(base_color.scaled(start_brightness))
-        end_color = self.to_svg_color(base_color.scaled(end_brightness))
+        start_color = self.to_svg_color(base_color.scale(start_brightness))
+        end_color = self.to_svg_color(base_color.scale(end_brightness))
 
         grad_id = 'gradient-{}'.format(len(self.output_buffer.get('defs')))
         attributes = {

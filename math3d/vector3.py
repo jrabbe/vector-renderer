@@ -67,6 +67,12 @@ class Vector(object):
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
 
+    def __gt__(self, other):
+        return self.length_squared() > other.length_squared()
+
+    def __lt__(self, other):
+        return self.length_squared() < other.length_squared()
+
     def __hash__(self):
         # Note: this is not absolutely reliable for large (> 16-bit) values of x, y, or z
         return hash(self.x) << 32 ^ hash(self.y) << 16 ^ hash(self.z)
@@ -79,6 +85,9 @@ class Vector(object):
 
     def __truediv__(self, other):
         return self.__div__(other)
+
+    def __pow__(self, other):
+        return Vector(math.pow(self.x, other.x), math.pow(self.y, other.y), math.pow(self.z, other.z))
 
     def __len__(self):
         return self.length()
@@ -135,4 +144,5 @@ class Vector(object):
         w = (self.x * transformation.m[3]) + (self.y * transformation.m[7]) + (self.z * transformation.m[11]) + transformation.m[15]
         return Vector(x / w, y / w, z / w)
 
-
+    def values(self):
+        return (self.x, self.y, self.z)
