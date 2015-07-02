@@ -26,9 +26,10 @@ class Polygon(object):
 
         self.average_z = reduce(lambda acc, pt: acc + pt.projected_z, self.points, 0) / 3
         self.average_y = reduce(lambda acc, pt: acc + pt.world_y, self.points, 0) / 3
+        self.max_y = max(map(lambda pt: pt.world_y, self.points))
 
     def __cmp__(self, other):
-        if self.average_y > other.average_y:
+        if self.max_y > other.max_y:
             any_in_front = reduce(lambda acc, pt: acc or (pt.projected_z > other.average_z), self.points, False)
             if any_in_front:
                 return 1
@@ -52,8 +53,7 @@ class Polygon(object):
         if not is_facing_camera:
             return
 
-        base = self.__find_base(self.points)
         point_coords = map(lambda p: p.coordinates, self.points)
-        point_transformation = m3.find_transformation(base, point_coords)
+        avg_brightness = sum(map(lambda p: p.brightness, self.points)) / len(self.points)
 
-        self.device.draw_triangle(base, point_transformation, self.points[0].brightness, self.points[2].brightness, self.color)
+        self.device.draw_polygon(point_coords, self.color.scaled(avg_brightness), self.points)

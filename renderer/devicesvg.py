@@ -28,6 +28,20 @@ class Device(d.Device):
 
         return svg_color
 
+    def draw_polygon(self, coords, color, points):
+        ps = map(lambda p: '{},{}'.format(p.x, p.y), coords)
+        color = self.to_svg_color(color)
+        attributes = {
+            'points': ' '.join(ps),
+            'fill': color,
+            'stroke': 'black',
+            'stroke-width': '1',
+            'data-world-coords': '{}'.format(' '.join(map(lambda p: str(p.world_coords), points)))
+        }
+
+        polygon = ET.Element('polygon', attrib=attributes)
+        self.output_buffer.get('polygons').append(polygon)
+
     def draw_triangle(self, base_points, transformation, start_brightness, end_brightness, base_color=None):
 
         points = map(lambda p: '{},{}'.format(p.x, p.y), base_points)

@@ -80,4 +80,6 @@ class Scene(object):
 
         proj = p.Projection(self.camera, self.__constrain(point), world_coords.z, self.__constrain(normal), brightness, is_facing_camera)
         proj.world_y = world_coords.y
+        proj.world_coords = world_coords
+        proj.view_coords = view_coords
         return proj

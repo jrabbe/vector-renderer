@@ -39,7 +39,7 @@ class Device(object):
         camera -- the camera to use for rendering
         meshes -- the meshes to render
         """
-        color = c4.Color(1.0, 0.0, 0.0, 1.0)
+        color = c4.Color(0.0, 1.0, 1.0, 1.0)
         scene = s.Scene(self.screen_width, self.screen_height, camera)
         self.begin_render()
 
@@ -60,6 +60,9 @@ class Device(object):
         self.end_render()
 
     # --------------------------------------------------------------------------
+
+    def draw_polygon(self, coords, color, points):
+        raise NotImplementedError
 
     def draw_line(self, point0, point1, color=None):
         """
