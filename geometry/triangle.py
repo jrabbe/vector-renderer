@@ -61,7 +61,7 @@ class Triangle(object):
                  (self.c in indices and self.a in indices)))
 
     def __get_unique_vertices(self, other):
-        result = indices()[:]
+        result = self.indices()[:]
         for i in other.incides():
             if i not in result:
                 result.append(i)

@@ -147,6 +147,6 @@ class Matrix(object):
         return self
 
     def scale(self, factor):
-        self.m = map(lambda v: factor * v, self.m)
+        self.m = list(map(lambda v: factor * v, self.m))
         return self
 

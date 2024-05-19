@@ -5,12 +5,12 @@ from __future__ import division
 
 import plotdevice as pd
 
-import device as d
+from .device import Device
 
-class Device(d.Device):
+class Device(Device):
 
     def __init__(self, screen_width, screen_height, name, options={}):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
+        super().__init__(screen_width=screen_width, screen_height=screen_height, name=name)
 
         fps = options.get('fps', 30)
         self.animated = options.get('animated', True)
@@ -42,8 +42,8 @@ class Device(d.Device):
             ce = self.__pd_color(base_color.scaled(end_brightness))
             pd.fill(cs, ce)
 
-        base_points = map(lambda p: p.transform(transformation), base_points)
-        points = map(lambda p: (p.x, p.y), base_points)
+        base_points = list(map(lambda p: p.transform(transformation), base_points))
+        points = list(map(lambda p: (p.x, p.y), base_points))
         pd.bezier(points, close=True)
 
     def draw_line(self, point0, point1, color=None):

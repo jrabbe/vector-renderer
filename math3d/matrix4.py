@@ -48,7 +48,7 @@ def rotation_z(angle):
     return result
 
 def rotation_yaw_pitch_roll(yaw, pitch, roll):
-    return (rotation_z(roll) * rotation_x(pitch)) * rotation_y(yaw);
+    return (rotation_z(roll) * rotation_x(pitch)) * rotation_y(yaw)
 
 def scaling(x, y, z):
     result = Matrix(identity=True)

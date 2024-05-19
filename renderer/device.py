@@ -5,9 +5,9 @@ from __future__ import division
 import sys
 
 # Local imports
-import color4 as c4
-import scene as s
-import polygon as p
+from .color4 import Color
+from .scene import Scene
+from .polygon import Polygon
 
 class Device(object):
     """
@@ -30,7 +30,7 @@ class Device(object):
         """
         Get the polygon instance for the device
         """
-        return p.Polygon(vertices, color, scene, self)
+        return Polygon(vertices, color, scene, self)
 
     def render(self, camera, meshes):
         """
@@ -39,8 +39,8 @@ class Device(object):
         camera -- the camera to use for rendering
         meshes -- the meshes to render
         """
-        color = c4.Color(1.0, 0.0, 0.0, 1.0)
-        scene = s.Scene(self.screen_width, self.screen_height, camera)
+        color = Color(1.0, 0.0, 0.0, 1.0)
+        scene = Scene(self.screen_width, self.screen_height, camera)
         self.begin_render()
 
         for mesh in meshes:
@@ -52,6 +52,7 @@ class Device(object):
                 polygon = self.polygon([triangle.va, triangle.vb, triangle.vc], color, scene)
                 polygons.append(polygon)
 
+            # Order the polygons in the scene to allow rendering foreground polygons in from of background polygons.
             polygons.sort()
 
             for polygon in polygons:

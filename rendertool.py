@@ -16,12 +16,12 @@ from math3d import *
 
 def prepare_output(output):
     output = path.abspath(output)
-    print 'Outputting rendered file(s) to ', output
+    print('Outputting rendered file(s) to ', output)
     if not path.exists(output):
-        print 'Output directory does not exist, creating.'
+        print('Output directory does not exist, creating.')
         os.mkdir(output)
     elif not path.isdir(output):
-        print 'Output location is not a directory, exiting.'
+        print('Output location is not a directory, exiting.')
         sys.exit(1)
 
     return output
@@ -42,18 +42,18 @@ if __name__ == '__main__':
     args = parser.parse_args()
     output = prepare_output(args.output)
 
-    print 'Preparing to render {} parts'.format(len(args.part))
+    print('Preparing to render {} parts'.format(len(args.part)))
 
-    print 'Creating camera'
+    print('Creating camera')
     cam = camera.Camera()
     cam.position = vector3.Vector(0, 0, 10)
     cam.target = vector3.Vector(0, 0, 0)
 
     for part in args.part:
 
-        print 'Reading geometry for ', part
+        print('Reading geometry for ', part)
 
-        start_time = time.clock()
+        start_time = time.perf_counter()
 
         g = reader.GeometryReader(args.primitives)
         m = g.read(part)
@@ -64,16 +64,16 @@ if __name__ == '__main__':
             frames = 600
             fps = args.fps
             dev = deviceplot.Device(320, 200, filename, {fps: fps})
-            print 'Rendering {} frames at {} fps ['.format(frames, fps),
+            print('Rendering {} frames at {} fps ['.format(frames, fps))
 
-            for i in xrange(frames):
+            for i in range(frames):
                 sys.stdout.flush()
                 sys.stdout.write('.')
                 m.rotation.x += 0.0104
                 m.rotation.y += 0.0104
                 dev.render(cam, [m])
 
-            print '] DONE'
+            print('] DONE')
         else:
             m.rotation.x = 0.3
             m.rotation.y = -0.4
@@ -88,11 +88,11 @@ if __name__ == '__main__':
                 sys.stderr.write('Undefined engine ' + args.engine + ' specified\n')
                 sys.exit(1)
 
-            print 'Rendering mesh'
+            print('Rendering mesh')
 
             dev.render(cam, [m])
 
         dev.present()
 
-        end_time = time.clock()
-        print 'Finished rendering part {} in {} seconds'.format(part, end_time - start_time)
+        end_time = time.perf_counter()
+        print('Finished rendering part {} in {} seconds'.format(part, end_time - start_time))

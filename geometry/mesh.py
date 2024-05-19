@@ -5,10 +5,10 @@ from __future__ import division
 
 from math3d import vector3
 
-from triangle import Triangle
-from trianglestrip import TriangleStrip
-import primitive
-from vertex import Vertex
+from .triangle import Triangle
+from .trianglestrip import TriangleStrip
+from .primitive import from_triangle_strips
+from .vertex import Vertex
 
 def cube():
     """
@@ -56,12 +56,12 @@ class Mesh(object):
         vertices -- the vertices for the 3D mesh
         textures_enabled -- whether the mesh uses textures
         """
-        print 'Creating mesh for {}'.format(name)
+        print('Creating mesh for {}'.format(name))
 
         self.name = name
 
         self.triangles = []
-        for i in xrange(0, len(indices), 3):
+        for i in range(0, len(indices), 3):
             a = indices[i + 0]
             b = indices[i + 1]
             c = indices[i + 2]
@@ -82,15 +82,15 @@ class Mesh(object):
         self.vertices += other.vertices[:]
 
     def finish(self):
-        print '- Created mesh with {} vertices and {} triangle triangles'.format(len(self.vertices), len(self.triangles))
+        print('- Created mesh with {} vertices and {} triangle triangles'.format(len(self.vertices), len(self.triangles)))
 
-        print 'Finishing up mesh:'
+        print('Finishing up mesh:')
         self.__assign_vertices()
         self.__find_neighbors()
         self.__combine()
 
     def __assign_vertices(self):
-        print '- Setting vertices for triangles'
+        print('- Setting vertices for triangles')
 
         for triangle in self.triangles:
             va = self.vertices[triangle.a]
@@ -99,7 +99,7 @@ class Mesh(object):
             triangle.set_vertices(va, vb, vc)
 
     def __find_neighbors(self):
-        print '- Finding neighbors for triangles'
+        print('- Finding neighbors for triangles')
 
         for triangle in self.triangles:
             self.__find_neighbors_of(triangle)
@@ -121,7 +121,7 @@ class Mesh(object):
                 break
 
     def __combine(self):
-        print '- Combining triangles into triangle strips'
+        print('- Combining triangles into triangle strips')
         strips = []
         visited = []
 
@@ -143,6 +143,6 @@ class Mesh(object):
 
                 strips.append(current)
 
-        self.primitive = primitive.from_triangle_strips(strips)
+        self.primitive = from_triangle_strips(strips)
         self.primitive.rotation = self.rotation
         self.primitive.position = self.position

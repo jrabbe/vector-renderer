@@ -8,7 +8,7 @@ from math3d import matrix4 as m4
 from math3d import vector2 as v2
 from math3d import vector3 as v3
 
-import projection as p
+from .projection import Projection
 
 class Scene(object):
     """
@@ -20,7 +20,7 @@ class Scene(object):
         self.height = height
         self.camera = camera
         self.projection = m4.perspective_fov_lh(0.78, width / height, 0.01, 1.0)
-        self.z_buffer = [sys.maxint] * (width * height)
+        self.z_buffer = [sys.maxsize] * (width * height)
         self.light = v3.Vector(0, 10, 10)
 
     def set_mesh(self, mesh):
@@ -78,6 +78,6 @@ class Scene(object):
             # It can never be brighter than brightest
             brightness = 1
 
-        proj = p.Projection(self.camera, self.__constrain(point), world_coords.z, self.__constrain(normal), brightness, is_facing_camera)
+        proj = Projection(self.camera, self.__constrain(point), world_coords.z, self.__constrain(normal), brightness, is_facing_camera)
         proj.world_y = world_coords.y
         return proj

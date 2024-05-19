@@ -90,7 +90,7 @@ class Vector(object):
         return self.x * self.x + self.y * self.y + self.z * self.z
 
     def normalize(self):
-        length = len(self)
+        length = self.length()
 
         if length == 0:
             return self

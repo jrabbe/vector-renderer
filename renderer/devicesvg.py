@@ -4,12 +4,12 @@
 from __future__ import division
 import xml.etree.ElementTree as ET
 
-import device as d
+from .device import Device
 
-class Device(d.Device):
+class Device(Device):
 
     def __init__(self, screen_width, screen_height, name):
-        d.Device.__init__(self, screen_width=screen_width, screen_height=screen_height, name=name)
+        super().__init__(screen_width=screen_width, screen_height=screen_height, name=name)
         ET.register_namespace('', 'http://www.w3.org/2000/svg')
         self.output_buffer = {
             'polygons': ET.Element('g'),
@@ -92,7 +92,8 @@ class Device(d.Device):
 
         tree = ET.ElementTree(svg)
 
+
         # TODO: Figure out how to add '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
         with open(self.name + '.svg', 'w') as f:
-            tree.write(f, encoding='UTF-8')
+            tree.write(f, encoding='unicode')
 
